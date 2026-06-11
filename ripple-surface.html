@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #060a12; overflow: hidden; }
+  canvas { display: block; width: 100% !important; height: 100% !important; }
+  #eq {
+    position: absolute;
+    bottom: 14px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    color: #c8d8f0;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="eq">z = sin(√(x² + y²)) · e<sup style="font-size:10px">−0.18r</sup></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setClearColor(0x060a12, 1);
+
+function resize() {
+  const W = window.innerWidth, H = window.innerHeight;
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(W, H);
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+}
+
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+camera.position.set(0, 14, 22);
+camera.lookAt(0, 0, 0);
+const scene = new THREE.Scene();
+
+const N = 90, RANGE = 10;
+const geo = new THREE.BufferGeometry();
+const positions = [], colors = [], indices = [];
+
+function ripple(x, y, t) {
+  const r = Math.sqrt(x*x + y*y);
+  return Math.sin(r * 1.2 - t * 1.6) * Math.exp(-0.18 * r);
+}
+function colorAt(z) {
+  const t = (z + 1) / 2;
+  return [0.04 + t * 0.28, 0.18 + t * 0.52, 0.55 + t * 0.45];
+}
+
+for (let i = 0; i < N; i++) {
+  for (let j = 0; j < N; j++) {
+    const x = (i / (N-1) - 0.5) * 2 * RANGE;
+    const y = (j / (N-1) - 0.5) * 2 * RANGE;
+    const z = ripple(x, y, 0);
+    positions.push(x, z * 2.5, y);
+    const [cr, cg, cb] = colorAt(z);
+    colors.push(cr, cg, cb);
+    if (i < N-1 && j < N-1) {
+      const a = i*N+j, b = (i+1)*N+j, c = (i+1)*N+(j+1), d = i*N+(j+1);
+      indices.push(a,b,d, b,c,d);
+    }
+  }
+}
+
+geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3));
+geo.setIndex(indices);
+geo.computeVertexNormals();
+
+const mat = new THREE.MeshPhongMaterial({ vertexColors: true, shininess: 40, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide });
+scene.add(new THREE.Mesh(geo, mat));
+
+function buildGridLines(time, opacity, color) {
+  const step = 6, wPos = [];
+  for (let i = 0; i < N; i += step) {
+    for (let j = 0; j < N-1; j++) {
+      const x0=(i/(N-1)-0.5)*2*RANGE, y0=(j/(N-1)-0.5)*2*RANGE;
+      const x1=(i/(N-1)-0.5)*2*RANGE, y1=((j+1)/(N-1)-0.5)*2*RANGE;
+      wPos.push(x0, ripple(x0,y0,time)*2.5+0.06, y0, x1, ripple(x1,y1,time)*2.5+0.06, y1);
+    }
+  }
+  for (let j = 0; j < N; j += step) {
+    for (let i = 0; i < N-1; i++) {
+      const x0=(i/(N-1)-0.5)*2*RANGE, y0=(j/(N-1)-0.5)*2*RANGE;
+      const x1=((i+1)/(N-1)-0.5)*2*RANGE, y1=(j/(N-1)-0.5)*2*RANGE;
+      wPos.push(x0, ripple(x0,y0,time)*2.5+0.06, y0, x1, ripple(x1,y1,time)*2.5+0.06, y1);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(wPos), 3));
+  return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color, transparent: true, opacity, linewidth: 1 }));
+}
+
+const glowLayer = buildGridLines(0, 0.10, 0x7ae8ff);
+const sharpLayer = buildGridLines(0, 0.32, 0xaef4ff);
+scene.add(glowLayer); scene.add(sharpLayer);
+
+scene.add(new THREE.AmbientLight(0x0d1e3a, 2.2));
+const dir = new THREE.DirectionalLight(0x6aadff, 1.1); dir.position.set(5, 14, 8); scene.add(dir);
+const fill = new THREE.PointLight(0x2255cc, 0.6, 60); fill.position.set(-8, 6, -8); scene.add(fill);
+const rim = new THREE.PointLight(0x00dfc4, 0.4, 60); rim.position.set(10, 2, 10); scene.add(rim);
+
+const posAttr = geo.attributes.position, colAttr = geo.attributes.color;
+
+function updateLines(layer, time) {
+  const step = 6, pa = layer.geometry.attributes.position;
+  let wi = 0;
+  for (let i = 0; i < N; i += step) {
+    for (let j = 0; j < N-1; j++) {
+      const x0=(i/(N-1)-0.5)*2*RANGE, y0=(j/(N-1)-0.5)*2*RANGE;
+      const x1=(i/(N-1)-0.5)*2*RANGE, y1=((j+1)/(N-1)-0.5)*2*RANGE;
+      pa.array[wi*3+1] = ripple(x0,y0,time)*2.5+0.06;
+      pa.array[wi*3+4] = ripple(x1,y1,time)*2.5+0.06;
+      wi += 2;
+    }
+  }
+  for (let j = 0; j < N; j += step) {
+    for (let i = 0; i < N-1; i++) {
+      const x0=(i/(N-1)-0.5)*2*RANGE, y0=(j/(N-1)-0.5)*2*RANGE;
+      const x1=((i+1)/(N-1)-0.5)*2*RANGE, y1=(j/(N-1)-0.5)*2*RANGE;
+      pa.array[wi*3+1] = ripple(x0,y0,time)*2.5+0.06;
+      pa.array[wi*3+4] = ripple(x1,y1,time)*2.5+0.06;
+      wi += 2;
+    }
+  }
+  pa.needsUpdate = true;
+}
+
+function updateSurface(time) {
+  let pi = 0, ci = 0;
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      const x = (i/(N-1)-0.5)*2*RANGE, y = (j/(N-1)-0.5)*2*RANGE;
+      const z = ripple(x, y, time);
+      posAttr.array[pi+1] = z * 2.5;
+      const [cr,cg,cb] = colorAt(z);
+      colAttr.array[ci] = cr; colAttr.array[ci+1] = cg; colAttr.array[ci+2] = cb;
+      pi += 3; ci += 3;
+    }
+  }
+  posAttr.needsUpdate = true; colAttr.needsUpdate = true;
+  geo.computeVertexNormals();
+}
+
+const ORBIT_R = Math.sqrt(14*14+22*22);
+let t = 0, angle = Math.atan2(22, 0);
+
+function animate() {
+  requestAnimationFrame(animate);
+  t += 0.018; angle += 0.003;
+  const flat = Math.sqrt(ORBIT_R*ORBIT_R - 14*14);
+  camera.position.x = Math.sin(angle) * flat;
+  camera.position.z = Math.cos(angle) * flat;
+  camera.position.y = 14;
+  camera.lookAt(0, 0, 0);
+  updateSurface(t);
+  updateLines(glowLayer, t);
+  updateLines(sharpLayer, t);
+  renderer.render(scene, camera);
+}
+
+resize();
+window.addEventListener('resize', resize);
+animate();
+</script>
+</body>
+</html>
