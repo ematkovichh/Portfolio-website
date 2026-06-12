@@ -14,8 +14,8 @@
   <!-- Replace with your actual deployed URL -->
   <meta property="og:url" content="https://ematkovic.com" />
   <!-- TODO: add a screenshot of your site as og-image.png for rich social previews -->
-  <meta property="og:image" content="https://ematkovic.com/og-image.png" />
-  <meta name="twitter:image" content="https://ematkovic.com/og-image.png" />
+  <meta property="og:image" content="https://ematkovichh.github.io/Portfolio-website/og-image.png" />
+  <meta name="twitter:image" content="https://ematkovichh.github.io/Portfolio-website/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Eugen Matković" />
   <meta name="twitter:description" content="Eugen Matković — Design Engineer. Portfolio of design, frontend engineering and creative work." />
@@ -300,6 +300,59 @@
       letter-spacing:.18em;width:fit-content;color:rgba(255,255,255,.4);transition:color .3s}
     .explore:hover{color:#fff}
 
+    /* ── Work project entrance animations ─────────────────────────────────── */
+    /* Container: keep reveal-scale for IO trigger but remove visual animation
+       so children can each animate independently */
+    .work-grid.reveal-scale{
+      opacity:1!important;transform:none!important;filter:none!important;transition:none!important}
+
+    /* Media — slides in from left on desktop, fades up on mobile */
+    .work-grid .work-media{
+      opacity:0;
+      transform:translateY(22px);
+      transition:opacity .85s cubic-bezier(.16,1,.3,1) .05s,
+                 transform .85s cubic-bezier(.16,1,.3,1) .05s;
+    }
+    @media(min-width:768px){
+      .work-grid .work-media{transform:translateX(-32px)}
+    }
+    .work-grid.in .work-media{opacity:1;transform:none}
+
+    /* Info children — staggered fade-up */
+    .work-grid .work-role{
+      opacity:0;transform:translateY(12px);
+      transition:opacity .6s cubic-bezier(.16,1,.3,1) .15s,
+                 transform .6s cubic-bezier(.16,1,.3,1) .15s;
+    }
+    .work-grid .work-title{
+      opacity:0;transform:translateY(12px);
+      transition:opacity .6s cubic-bezier(.16,1,.3,1) .25s,
+                 transform .6s cubic-bezier(.16,1,.3,1) .25s;
+    }
+    .work-grid .work-desc{
+      opacity:0;transform:translateY(12px);
+      transition:opacity .6s cubic-bezier(.16,1,.3,1) .35s,
+                 transform .6s cubic-bezier(.16,1,.3,1) .35s;
+    }
+    /* .work-rows handled by existing .work-row stagger — delays align here */
+    .work-grid .chips{
+      opacity:0;transform:translateY(12px);
+      transition:opacity .6s cubic-bezier(.16,1,.3,1) .52s,
+                 transform .6s cubic-bezier(.16,1,.3,1) .52s;
+    }
+    .work-grid .explore{
+      opacity:0;transform:translateY(12px);
+      /* merge with existing color transition */
+      transition:opacity .6s cubic-bezier(.16,1,.3,1) .60s,
+                 transform .6s cubic-bezier(.16,1,.3,1) .60s,
+                 color .3s 0s;
+    }
+    .work-grid.in .work-role,
+    .work-grid.in .work-title,
+    .work-grid.in .work-desc,
+    .work-grid.in .chips,
+    .work-grid.in .explore{opacity:1;transform:none}
+
     /* skills */
     .caps{border-top:1px solid transparent}
     .cap{
@@ -519,6 +572,9 @@
       .brand,.nav-link{animation:none;opacity:1;transform:none}
       .label-inner-text{transform:none;letter-spacing:.2em;transition:none}
       .dd{transition:none}.dd-item{opacity:1;transform:none;transition:background .14s,color .14s}
+      .work-grid .work-media,
+      .work-grid .work-role,.work-grid .work-title,.work-grid .work-desc,
+      .work-grid .chips,.work-grid .explore{opacity:1;transform:none;transition:color .3s}
     }
 
     /* DESIGN: active nav link indicator */
@@ -721,7 +777,7 @@
       skills:["Mathematical Storytelling","Creative Technology"] },
     { id:"02", title:"Cinematic Content",
       desc:"Directing and editing short-form cinematic content with a focus on pacing, visual rhythm, and emotional storytelling.",
-      img:"images/project-video.webp", embed:null,
+      img:"images/project-video.webp", embed:"cinematic-content.html",
       role:"Director & Editor",
       problem:"Emerging creators needed cinematic quality without the budget for a full production studio.",
       process:"Developed a modular workflow system combining careful pre-planning, deliberate pacing, and refined post-production that scales from solo to team.",
@@ -729,7 +785,7 @@
       skills:["Design","Creative Technology"] },
     { id:"03", title:"Math Education Videos",
       desc:"Creating animated math lessons that explain equations, proofs, and concepts through clean visual derivations with readable pacing.",
-      img:"images/project-math-lesson.webp", embed:null,
+      img:"images/project-math-lesson.webp", embed:"math-viz.html",
       role:"Mathematical Animator",
       problem:"Math students struggle with abstract notation because textbooks lack visual intuition for how equations transform step by step.",
       process:"Designed a clean white-canvas style with dark text, smooth transitions between each algebraic step, and pacing tuned for comprehension over speed.",
@@ -737,7 +793,7 @@
       skills:["Mathematical Storytelling","Frontend Engineering"] },
     { id:"04", title:"Editorial Writing",
       desc:"Writing long-form essays and brand narratives that combine research depth with readable, human prose.",
-      img:"images/project-writing.webp", embed:null,
+      img:"images/project-writing.webp", embed:"editorial-writing.html",
       role:"Writer & Editor",
       problem:"Technical publications were either too dense for general readers or too shallow for professionals.",
       process:"Developed a layered writing structure that hooks the reader first, then delivers technical depth without jargon bloat.",
@@ -745,7 +801,7 @@
       skills:["Design","Creative Technology"] },
     { id:"05", title:"Product Design",
       desc:"Designing digital products that feel inevitable — where every interaction, transition, and empty state earns its place.",
-      img:"images/project-product.webp", embed:null,
+      img:"images/project-product.webp", embed:"product-design-3d.html",
       role:"Product Designer",
       problem:"A mobile app had strong backend technology but users abandoned during onboarding due to confusing flows.",
       process:"Redesigned the onboarding and core interaction model using progressive disclosure and tactile micro-interactions.",

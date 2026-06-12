@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#040407;overflow:hidden}
+  canvas{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+/* ── Editorial Writing — typographic composition ──────────────────────────
+   Layered prose fragments reveal themselves word by word.
+   Amber glow on key words, serif body text, monospace labels.
+──────────────────────────────────────────────────────────────────────────── */
+
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+let W, H, DPR;
+
+function resize(){
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width  = W * DPR;
+  canvas.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── Palette ─────────────────────────────────────────────────────────────── */
+const AMBER  = '#d4a843';
+const AMBERL = 'rgba(212,168,67,';
+const WHITE  = 'rgba(255,255,255,';
+const BG     = '#040407';
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+// Each entry: lines[], with words flagged for amber highlight
+const PASSAGES = [
+  {
+    label: '01 — Essay',
+    lines: [
+      [{ w:'Every' }, { w:'sentence' }, { w:'earns' }, { w:'its' }, { w:'place.' }],
+      [{ w:'Every' }, { w:'paragraph' }, { w:'builds' }, { w:'on' }, { w:'the' }, { w:'last.' }],
+      [{ w:'The' }, { w:'story', amber:true }, { w:'unfolds' }, { w:'through' }, { w:'structure.' }],
+    ]
+  },
+  {
+    label: '02 — Narrative',
+    lines: [
+      [{ w:'Words' }, { w:'that' }, { w:'resonate', amber:true }, { w:'beyond' }, { w:'the' }, { w:'page.' }],
+      [{ w:'Writing' }, { w:'that' }, { w:'thinks', amber:true }, { w:'—' }, { w:'and' }, { w:'feels.' }],
+      [{ w:'Prose' }, { w:'with' }, { w:'a' }, { w:'point' }, { w:'of' }, { w:'view.' }],
+    ]
+  },
+  {
+    label: '03 — Voice',
+    lines: [
+      [{ w:'Research' }, { w:'depth,' }, { w:'human', amber:true }, { w:'clarity.' }],
+      [{ w:'Neither' }, { w:'too' }, { w:'dense' }, { w:'nor' }, { w:'too' }, { w:'shallow.' }],
+      [{ w:'A' }, { w:'layered', amber:true }, { w:'architecture' }, { w:'of' }, { w:'meaning.' }],
+    ]
+  },
+];
+
+/* ── State ───────────────────────────────────────────────────────────────── */
+let passageIdx  = 0;
+let lineIdx     = 0;
+let wordIdx     = 0;
+let charIdx     = 0;      // character-level progress for current word
+let phase       = 'typing'; // typing | pause | fadeout
+let phaseTimer  = 0;
+let globalAlpha = 1;
+let wordTimers  = [];      // per-line, per-word: how many chars revealed
+
+// Build a flat revealed-words array per line
+let revealed = [];         // revealed[lineI][wordI] = chars revealed (0…word.length)
+
+function resetPassage(){
+  const p = PASSAGES[passageIdx];
+  revealed = p.lines.map(line => line.map(() => 0));
+  lineIdx = 0; wordIdx = 0; charIdx = 0;
+  phase = 'typing'; phaseTimer = 0; globalAlpha = 1;
+}
+resetPassage();
+
+/* ── Timing ──────────────────────────────────────────────────────────────── */
+const CHAR_MS   = 38;   // ms per character
+const WORD_GAP  = 80;   // extra ms between words
+const LINE_GAP  = 280;  // extra ms between lines
+const PAUSE_MS  = 2400; // hold before fadeout
+const FADE_MS   = 900;  // fadeout duration
+
+let lastTs = 0, acc = 0;
+
+function advance(dt){
+  if(phase === 'pause'){
+    phaseTimer += dt;
+    if(phaseTimer >= PAUSE_MS) phase = 'fadeout';
+    return;
+  }
+  if(phase === 'fadeout'){
+    phaseTimer += dt;
+    globalAlpha = Math.max(0, 1 - phaseTimer / FADE_MS);
+    if(phaseTimer >= FADE_MS){
+      passageIdx = (passageIdx + 1) % PASSAGES.length;
+      resetPassage();
+    }
+    return;
+  }
+
+  // typing
+  acc += dt;
+  const p    = PASSAGES[passageIdx];
+  const line = p.lines[lineIdx];
+  const word = line[wordIdx];
+
+  const needed = CHAR_MS + (wordIdx > 0 && charIdx === 0 ? WORD_GAP : 0)
+                         + (lineIdx > 0 && wordIdx === 0 && charIdx === 0 ? LINE_GAP : 0);
+
+  if(acc >= needed){
+    acc -= needed;
+    charIdx++;
+    revealed[lineIdx][wordIdx] = charIdx;
+
+    if(charIdx >= word.w.length){
+      // advance to next word / line
+      wordIdx++; charIdx = 0;
+      if(wordIdx >= line.length){
+        lineIdx++; wordIdx = 0;
+        if(lineIdx >= p.lines.length){
+          phase = 'pause'; phaseTimer = 0;
+        }
+      }
+    }
+  }
+}
+
+/* ── Draw ────────────────────────────────────────────────────────────────── */
+function draw(ts){
+  const dt = Math.min(ts - lastTs, 60);
+  lastTs = ts;
+  advance(dt);
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, W, H);
+
+  const p = PASSAGES[passageIdx];
+
+  // ── Ghost large letter (decorative) ───────────────────────────────────────
+  ctx.save();
+  ctx.globalAlpha = 0.04 * globalAlpha;
+  ctx.font = `700 ${Math.round(H*0.72)}px Georgia,serif`;
+  ctx.fillStyle = '#fff';
+  ctx.textBaseline = 'alphabetic';
+  const gl = p.lines[0][0].w[0];
+  ctx.fillText(gl, W * 0.04, H * 0.84);
+  ctx.restore();
+
+  // ── Layout measurements ────────────────────────────────────────────────────
+  const marginL  = W * 0.10;
+  const marginR  = W * 0.90;
+  const bodySize = Math.max(14, Math.round(H * 0.048));
+  const lineH    = bodySize * 1.72;
+  const labelSize= Math.max(9,  Math.round(H * 0.022));
+  const ruleY    = H * 0.28;
+  const startY   = ruleY + lineH * 1.3;
+
+  // ── Label (section number, monospace) ────────────────────────────────────
+  ctx.save();
+  ctx.globalAlpha = 0.45 * globalAlpha;
+  ctx.font = `300 ${labelSize}px 'DM Mono','Courier New',monospace`;
+  ctx.fillStyle = AMBER;
+  ctx.textBaseline = 'middle';
+  ctx.letterSpacing = '0.18em';
+  ctx.fillText(p.label.toUpperCase(), marginL, ruleY - labelSize * 1.5);
+  ctx.restore();
+
+  // ── Horizontal rule ───────────────────────────────────────────────────────
+  ctx.save();
+  ctx.globalAlpha = 0.18 * globalAlpha;
+  const rGrad = ctx.createLinearGradient(marginL, 0, marginR, 0);
+  rGrad.addColorStop(0,   AMBER);
+  rGrad.addColorStop(0.6, 'rgba(212,168,67,0.3)');
+  rGrad.addColorStop(1,   'rgba(212,168,67,0)');
+  ctx.strokeStyle = rGrad;
+  ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(marginL, ruleY); ctx.lineTo(marginR, ruleY);
+  ctx.stroke();
+  ctx.restore();
+
+  // ── Prose lines ────────────────────────────────────────────────────────────
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = `300 ${bodySize}px Georgia,'Times New Roman',serif`;
+
+  p.lines.forEach((line, li) => {
+    const y = startY + li * lineH;
+    let x = marginL;
+
+    line.forEach((word, wi) => {
+      const charsToShow = revealed[li] ? revealed[li][wi] : 0;
+      if(charsToShow <= 0) return;
+
+      const partial = word.w.slice(0, charsToShow);
+      const isAmber = word.amber;
+      const isLast  = li === lineIdx && wi === wordIdx;
+
+      ctx.save();
+
+      if(isAmber){
+        ctx.shadowColor = AMBER;
+        ctx.shadowBlur  = 18 * (W / 900);
+        ctx.fillStyle   = AMBER;
+        ctx.globalAlpha = 0.92 * globalAlpha;
+      } else {
+        ctx.fillStyle   = `rgba(240,235,225,${0.78 * globalAlpha})`;
+        ctx.globalAlpha = globalAlpha;
+      }
+
+      ctx.fillText(partial, x, y);
+      ctx.restore();
+
+      // Measure full word for advance (use full word width for spacing)
+      const fullW = ctx.measureText(word.w + ' ').width;
+      x += ctx.measureText(partial + ' ').width;
+
+      // Blinking cursor after the last typed character
+      if(isLast && phase === 'typing'){
+        const now = Date.now();
+        if(Math.floor(now / 530) % 2 === 0){
+          ctx.save();
+          ctx.globalAlpha = 0.7 * globalAlpha;
+          ctx.fillStyle = AMBER;
+          ctx.shadowColor = AMBER;
+          ctx.shadowBlur = 10;
+          ctx.fillRect(x - ctx.measureText(' ').width * 0.2, y - bodySize * 0.85, 1.5, bodySize);
+          ctx.restore();
+        }
+      }
+    });
+  });
+
+  // ── Bottom rule (decorative) ──────────────────────────────────────────────
+  if(phase === 'pause' || phase === 'fadeout'){
+    ctx.save();
+    const prog = phase === 'pause'
+      ? Math.min(1, phaseTimer / 400)
+      : 1 - phaseTimer / FADE_MS;
+    ctx.globalAlpha = 0.12 * prog;
+    ctx.strokeStyle = WHITE + '0.5)';
+    ctx.lineWidth = 0.6;
+    const by = startY + p.lines.length * lineH + lineH * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(marginL, by);
+    ctx.lineTo(marginL + (marginR - marginL) * prog, by);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Page number ────────────────────────────────────────────────────────────
+  ctx.save();
+  ctx.globalAlpha = 0.18 * globalAlpha;
+  ctx.font = `300 ${labelSize}px 'DM Mono','Courier New',monospace`;
+  ctx.fillStyle = '#fff';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`0${passageIdx + 1}`, marginL, H * 0.88);
+  ctx.restore();
+
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden}
+  canvas{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+/* ── Cinematic Content — film aesthetic canvas animation ──────────────────
+   Letterbox bars, horizontal light streaks, film grain, vignette,
+   warm amber ↔ cool teal color grade. 60fps RAF loop.
+──────────────────────────────────────────────────────────────────────────── */
+
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+let W, H, DPR;
+
+/* ── Grain buffer (pre-baked noise tile, re-rolled every N frames) ──────── */
+let grainCanvas, grainCtx;
+let grainFrame = 0;
+const GRAIN_TILE = 256;
+
+function buildGrain(){
+  grainCanvas = document.createElement('canvas');
+  grainCanvas.width = grainCanvas.height = GRAIN_TILE;
+  grainCtx = grainCanvas.getContext('2d');
+}
+function rollGrain(){
+  const id = grainCtx.createImageData(GRAIN_TILE, GRAIN_TILE);
+  const d  = id.data;
+  for(let i = 0; i < d.length; i += 4){
+    const v = (Math.random() * 255)|0;
+    d[i] = d[i+1] = d[i+2] = v;
+    d[i+3] = 18 + (Math.random() * 22)|0;
+  }
+  grainCtx.putImageData(id, 0, 0);
+}
+buildGrain();
+rollGrain();
+
+/* ── Resize ──────────────────────────────────────────────────────────────── */
+function resize(){
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width  = W * DPR;
+  canvas.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── Letterbox proportion ────────────────────────────────────────────────── */
+// 2.39:1 cinemascope letterbox within the frame
+function letterboxH(){
+  const targetAR = 2.39;
+  const frameH = W / targetAR;
+  return Math.max(0, (H - frameH) / 2);
+}
+
+/* ── Streaks ─────────────────────────────────────────────────────────────── */
+const NUM_STREAKS = 7;
+
+function makeStreak(i){
+  const warm = Math.random() > 0.42; // 58% teal, 42% amber
+  return {
+    y:     H * (0.12 + 0.76 * Math.random()),
+    x:    -W * (0.1 + Math.random() * 0.3),
+    len:   W * (0.22 + Math.random() * 0.42),
+    speed: W * (0.018 + Math.random() * 0.022),
+    h:     1.2 + Math.random() * 3.2,
+    alpha: 0.08 + Math.random() * 0.24,
+    warm,
+    phase: Math.random() * Math.PI * 2,
+    pulseSpd: 0.4 + Math.random() * 0.7,
+  };
+}
+
+const streaks = Array.from({length: NUM_STREAKS}, (_, i) => {
+  const s = makeStreak(i);
+  s.x = Math.random() * W;   // start spread across frame
+  return s;
+});
+
+/* ── Dust motes ──────────────────────────────────────────────────────────── */
+const NUM_MOTES = 22;
+const motes = Array.from({length: NUM_MOTES}, () => ({
+  x: Math.random() * 1.4 - 0.2,
+  y: Math.random() * 1.2 - 0.1,
+  r: 0.3 + Math.random() * 1.2,
+  alpha: 0.05 + Math.random() * 0.18,
+  spd: (Math.random() - 0.5) * 0.00008,
+  drift: (Math.random() - 0.5) * 0.00012,
+  phase: Math.random() * Math.PI * 2,
+}));
+
+/* ── Scene composition: floating text labels ─────────────────────────────── */
+const LABELS = [
+  { text: 'SEQUENCE 01',  rx: 0.08, ry: 0.40 },
+  { text: 'INT. DAY',     rx: 0.08, ry: 0.47 },
+  { text: 'TAKE 04',      rx: 0.08, ry: 0.54 },
+];
+
+const TITLE_TEXT = 'CINEMATIC';
+
+/* ── Render loop ─────────────────────────────────────────────────────────── */
+let t0 = null;
+let frame = 0;
+
+function draw(ts){
+  if(!t0) t0 = ts;
+  const t = (ts - t0) * 0.001;
+  frame++;
+
+  // Re-roll grain every 2 frames
+  if(frame % 2 === 0) rollGrain();
+
+  // ── 1. Deep black base ───────────────────────────────────────────────────
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+
+  const lb = letterboxH();
+  const activeH = H - lb * 2;
+
+  // ── 2. Scene gradient (inside letterbox) ─────────────────────────────────
+  const sceneGrad = ctx.createLinearGradient(0, lb, W, lb + activeH);
+  sceneGrad.addColorStop(0,    'rgba(4,6,14,1)');
+  sceneGrad.addColorStop(0.35, 'rgba(8,12,22,1)');
+  sceneGrad.addColorStop(0.65, 'rgba(14,10,6,1)');
+  sceneGrad.addColorStop(1,    'rgba(4,4,4,1)');
+  ctx.fillStyle = sceneGrad;
+  ctx.fillRect(0, lb, W, activeH);
+
+  // ── 3. Horizontal scan lines (subtle) ────────────────────────────────────
+  ctx.save();
+  ctx.globalAlpha = 0.025;
+  ctx.fillStyle = '#000';
+  for(let y = lb; y < lb + activeH; y += 3){
+    ctx.fillRect(0, y, W, 1);
+  }
+  ctx.restore();
+
+  // ── 4. Light streaks ─────────────────────────────────────────────────────
+  streaks.forEach(s => {
+    // Advance
+    s.x += s.speed;
+    if(s.x > W + s.len * 1.2){
+      const ns = makeStreak(0);
+      Object.assign(s, ns);
+      s.x = -s.len * 1.2;
+    }
+
+    const pulse = 0.7 + 0.3 * Math.sin(t * s.pulseSpd + s.phase);
+    const a = s.alpha * pulse;
+
+    const color = s.warm
+      ? `rgba(212,168,67,${a.toFixed(3)})`
+      : `rgba(52,211,238,${a.toFixed(3)})`;
+    const colorFade = s.warm
+      ? `rgba(212,168,67,0)`
+      : `rgba(52,211,238,0)`;
+
+    const grad = ctx.createLinearGradient(s.x, 0, s.x + s.len, 0);
+    grad.addColorStop(0,    colorFade);
+    grad.addColorStop(0.15, color);
+    grad.addColorStop(0.75, color);
+    grad.addColorStop(1,    colorFade);
+
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = s.h;
+    ctx.beginPath();
+    ctx.moveTo(s.x, s.y);
+    ctx.lineTo(s.x + s.len, s.y);
+    ctx.stroke();
+
+    // Soft glow behind streak
+    const glowColor = s.warm
+      ? `rgba(212,168,67,${(a * 0.25).toFixed(3)})`
+      : `rgba(52,211,238,${(a * 0.25).toFixed(3)})`;
+    ctx.strokeStyle = glowColor;
+    ctx.lineWidth = s.h * 10;
+    ctx.filter = `blur(${Math.round(s.h * 2.5)}px)`;
+    ctx.beginPath();
+    ctx.moveTo(s.x + s.len * 0.15, s.y);
+    ctx.lineTo(s.x + s.len * 0.78, s.y);
+    ctx.stroke();
+    ctx.filter = 'none';
+    ctx.restore();
+  });
+
+  // ── 5. Dust motes ─────────────────────────────────────────────────────────
+  motes.forEach(m => {
+    m.x += m.drift;
+    m.y += m.spd;
+    if(m.x < -0.05) m.x = 1.05;
+    if(m.x > 1.05)  m.x = -0.05;
+    if(m.y < -0.05) m.y = 1.05;
+    if(m.y > 1.05)  m.y = -0.05;
+
+    const pulse = 0.5 + 0.5 * Math.sin(t * 0.7 + m.phase);
+    ctx.save();
+    ctx.globalAlpha = m.alpha * pulse;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(m.x * W, lb + m.y * activeH, m.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // ── 6. Vignette (double-pass for depth) ──────────────────────────────────
+  const vig1 = ctx.createRadialGradient(W/2, H/2, H*0.08, W/2, H/2, Math.max(W,H)*0.78);
+  vig1.addColorStop(0, 'rgba(0,0,0,0)');
+  vig1.addColorStop(1, 'rgba(0,0,0,0.88)');
+  ctx.fillStyle = vig1;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── 7. Film grain overlay ─────────────────────────────────────────────────
+  ctx.save();
+  ctx.globalAlpha = 0.32;
+  // Tile the noise across the frame
+  for(let tx = 0; tx < W; tx += GRAIN_TILE){
+    for(let ty = 0; ty < H; ty += GRAIN_TILE){
+      ctx.drawImage(grainCanvas, tx, ty);
+    }
+  }
+  ctx.restore();
+
+  // ── 8. Letterbox bars ────────────────────────────────────────────────────
+  if(lb > 0.5){
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0,      W, lb);
+    ctx.fillRect(0, H - lb, W, lb);
+  }
+
+  // ── 9. Large background title text ────────────────────────────────────────
+  {
+    const tSize = Math.round(activeH * 0.38);
+    ctx.save();
+    ctx.font = `700 ${tSize}px 'Inter','Helvetica Neue',sans-serif`;
+    ctx.textBaseline = 'middle';
+    ctx.letterSpacing = '0.18em';
+    const tw = ctx.measureText(TITLE_TEXT).width;
+    // Phase-based opacity pulse
+    const fade = 0.032 + 0.012 * Math.sin(t * 0.22);
+    ctx.globalAlpha = fade;
+    ctx.fillStyle = '#fff';
+    ctx.fillText(TITLE_TEXT, (W - tw) / 2, lb + activeH * 0.50);
+    ctx.restore();
+  }
+
+  // ── 10. Script-style labels (left edge) ──────────────────────────────────
+  {
+    const lbSz = Math.max(8, Math.round(H * 0.018));
+    ctx.save();
+    ctx.font = `400 ${lbSz}px 'DM Mono','Courier New',monospace`;
+    ctx.textBaseline = 'middle';
+    ctx.letterSpacing = '0.12em';
+    LABELS.forEach((l, i) => {
+      const pulse = 0.3 + 0.12 * Math.sin(t * 0.18 + i * 1.4);
+      ctx.globalAlpha = pulse;
+      ctx.fillStyle = i === 0 ? '#d4a843' : 'rgba(255,255,255,0.45)';
+      ctx.fillText(l.text, l.rx * W, l.ry * H);
+    });
+    ctx.restore();
+  }
+
+  // ── 11. Frame counter (top-right, timecode style) ─────────────────────────
+  {
+    const fc = Math.floor(t * 24) % (24 * 60); // 24fps frame count up to 1min
+    const ss = Math.floor(fc / 24).toString().padStart(2,'0');
+    const ff = (fc % 24).toString().padStart(2,'0');
+    const tcStr = `00:${ss}:${ff}`;
+    const tcSz = Math.max(7, Math.round(H * 0.016));
+    ctx.save();
+    ctx.font = `300 ${tcSz}px 'DM Mono','Courier New',monospace`;
+    ctx.textBaseline = 'top';
+    ctx.letterSpacing = '0.06em';
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = '#d4a843';
+    ctx.fillText(tcStr, W * 0.72, lb + activeH * 0.06);
+    ctx.restore();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

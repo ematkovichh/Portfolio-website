@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#030308;overflow:hidden}
+</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ── 3D Product Design ────────────────────────────────────────────────────── */
+
+const scene    = new THREE.Scene();
+const camera   = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 0, 5.5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x030308, 1);
+renderer.toneMapping        = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.body.appendChild(renderer.domElement);
+
+/* ── Canvas helper: rounded rectangle path ──────────────────────────────── */
+function rrPath(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x+r, y);
+  g.lineTo(x+w-r, y);   g.quadraticCurveTo(x+w, y,   x+w, y+r);
+  g.lineTo(x+w, y+h-r); g.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  g.lineTo(x+r, y+h);   g.quadraticCurveTo(x,   y+h, x,   y+h-r);
+  g.lineTo(x, y+r);     g.quadraticCurveTo(x,   y,   x+r, y);
+  g.closePath();
+}
+
+/* ── Screen texture ─────────────────────────────────────────────────────── */
+function buildScreen(){
+  const cv = document.createElement('canvas');
+  cv.width = 540; cv.height = 1170;
+  const g = cv.getContext('2d');
+
+  // BG
+  g.fillStyle = '#080812';
+  g.fillRect(0, 0, 540, 1170);
+
+  // Radial glow from top
+  const grd = g.createRadialGradient(270, 0, 0, 270, 0, 560);
+  grd.addColorStop(0, 'rgba(99,102,241,0.18)');
+  grd.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 540, 1170);
+
+  // Status bar dots
+  g.fillStyle = 'rgba(255,255,255,0.45)';
+  g.fillRect(60, 44, 88, 7);
+  g.fillRect(416, 44, 36, 7);
+  g.fillRect(378, 44, 28, 7);
+
+  // Dynamic island (pill)
+  g.fillStyle = '#000';
+  rrPath(g, 204, 16, 132, 34, 17);
+  g.fill();
+
+  // Header title + subtitle
+  g.fillStyle = 'rgba(255,255,255,0.88)';
+  g.fillRect(44, 108, 190, 20);
+  g.fillStyle = 'rgba(255,255,255,0.32)';
+  g.fillRect(44, 140, 268, 12);
+
+  // Top card
+  rrPath(g, 44, 176, 452, 112, 20);
+  g.fillStyle = 'rgba(255,255,255,0.05)';
+  g.fill();
+  // Accent stripe (plain rect, not rounded)
+  g.fillStyle = '#6366f1';
+  g.fillRect(44, 176, 452, 4);
+  // Avatar
+  g.fillStyle = 'rgba(99,102,241,0.35)';
+  g.beginPath(); g.arc(88, 232, 28, 0, Math.PI*2); g.fill();
+  g.fillStyle = 'rgba(255,255,255,0.6)';
+  g.fillRect(128, 216, 130, 14);
+  g.fillStyle = 'rgba(255,255,255,0.3)';
+  g.fillRect(128, 240, 190, 11);
+  // CTA button
+  rrPath(g, 368, 214, 108, 34, 10);
+  g.fillStyle = 'rgba(99,102,241,0.75)';
+  g.fill();
+  g.fillStyle = 'rgba(255,255,255,0.9)';
+  g.fillRect(384, 226, 72, 10);
+
+  // Metric cards row
+  const COLS = ['#6366f1', '#22d3ee', '#a855f7'];
+  const LABS = ['34%', '18%', '2.4×'];
+  const SUBS = ['Onboarding', 'Retention', 'Engagement'];
+  [44, 184, 324].forEach((x, i) => {
+    rrPath(g, x, 312, 118, 98, 16);
+    g.fillStyle = 'rgba(255,255,255,0.06)';
+    g.fill();
+    // Accent stripe
+    g.fillStyle = COLS[i];
+    g.fillRect(x, 312, 118, 4);
+    g.fillStyle = 'rgba(255,255,255,0.85)';
+    g.fillRect(x+14, 336, 70, 16);
+    g.fillStyle = 'rgba(255,255,255,0.35)';
+    g.fillRect(x+14, 362, 88, 10);
+  });
+
+  // Section label
+  g.fillStyle = 'rgba(255,255,255,0.4)';
+  g.fillRect(44, 436, 104, 10);
+
+  // List rows
+  const IC_COLS = ['#6366f1', '#22d3ee', '#a855f7', '#f472b6'];
+  for(let i = 0; i < 4; i++){
+    const y = 464 + i * 74;
+    rrPath(g, 44, y, 452, 58, 14);
+    g.fillStyle = 'rgba(255,255,255,0.05)';
+    g.fill();
+    // Icon bg
+    g.fillStyle = IC_COLS[i] + '33';
+    rrPath(g, 64, y+11, 36, 36, 9);
+    g.fill();
+    g.fillStyle = IC_COLS[i];
+    g.fillRect(76, y+23, 12, 12);
+    // Text
+    g.fillStyle = 'rgba(255,255,255,0.8)';
+    g.fillRect(116, y+14, 148, 13);
+    g.fillStyle = 'rgba(255,255,255,0.3)';
+    g.fillRect(116, y+36, 204, 10);
+    // Value
+    g.fillStyle = 'rgba(255,255,255,0.55)';
+    g.fillRect(418, y+22, 58, 13);
+  }
+
+  // Bottom nav bar
+  g.fillStyle = 'rgba(255,255,255,0.03)';
+  g.fillRect(0, 1064, 540, 106);
+  g.strokeStyle = 'rgba(255,255,255,0.07)';
+  g.lineWidth = 1;
+  g.beginPath(); g.moveTo(0, 1064); g.lineTo(540, 1064); g.stroke();
+
+  [0.15, 0.37, 0.60, 0.82].forEach((rx, i) => {
+    const nx = rx * 540, ny = 1114;
+    if(i === 0){
+      g.fillStyle = 'rgba(99,102,241,0.2)';
+      g.beginPath(); g.arc(nx, ny, 22, 0, Math.PI*2); g.fill();
+      g.fillStyle = '#6366f1';
+    } else {
+      g.fillStyle = 'rgba(255,255,255,0.28)';
+    }
+    g.beginPath(); g.arc(nx, ny, 7, 0, Math.PI*2); g.fill();
+  });
+
+  // Home indicator
+  rrPath(g, 195, 1146, 150, 5, 3);
+  g.fillStyle = 'rgba(255,255,255,0.22)';
+  g.fill();
+
+  return new THREE.CanvasTexture(cv);
+}
+
+/* ── Phone ──────────────────────────────────────────────────────────────── */
+const PW = 1.06, PH = 2.30, PD = 0.082;
+
+const phone = new THREE.Mesh(
+  new THREE.BoxGeometry(PW, PH, PD),
+  new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(0.055, 0.055, 0.075),
+    metalness: 0.72,
+    roughness: 0.22,
+    clearcoat: 0.7,
+    clearcoatRoughness: 0.08,
+  })
+);
+scene.add(phone);
+
+// Screen
+const screenMesh = new THREE.Mesh(
+  new THREE.PlaneGeometry(PW * 0.89, PH * 0.91),
+  new THREE.MeshBasicMaterial({ map: buildScreen() })
+);
+screenMesh.position.z = PD / 2 + 0.001;
+phone.add(screenMesh);
+
+// Dynamic island notch
+const niGeo = new THREE.CylinderGeometry(0.038, 0.038, 0.22, 16);
+niGeo.rotateZ(Math.PI / 2);
+const notch = new THREE.Mesh(niGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));
+notch.position.set(0, PH / 2 - 0.082, PD / 2 + 0.002);
+phone.add(notch);
+
+// Home indicator bar
+const homeBar = new THREE.Mesh(
+  new THREE.BoxGeometry(0.26, 0.022, 0.001),
+  new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.25, transparent: true })
+);
+homeBar.position.set(0, -PH / 2 + 0.07, PD / 2 + 0.002);
+phone.add(homeBar);
+
+/* ── Floating UI stat cards ─────────────────────────────────────────────── */
+function buildCard(label, accent){
+  const cv = document.createElement('canvas');
+  cv.width = 256; cv.height = 120;
+  const g = cv.getContext('2d');
+
+  rrPath(g, 0, 0, 256, 120, 18);
+  g.fillStyle = 'rgba(12,12,24,0.96)';
+  g.fill();
+
+  // Top accent stripe
+  g.fillStyle = accent;
+  g.fillRect(0, 0, 256, 4);
+
+  g.fillStyle = 'rgba(255,255,255,0.82)';
+  g.fillRect(18, 24, label.length * 7 + 14, 14);
+  g.fillStyle = 'rgba(255,255,255,0.32)';
+  g.fillRect(18, 48, 140, 10);
+  g.fillStyle = accent + 'cc';
+  g.fillRect(18, 68, 56, 9);
+  g.fillRect(82, 68, 72, 9);
+
+  g.strokeStyle = 'rgba(255,255,255,0.08)';
+  g.lineWidth = 1;
+  rrPath(g, 0.5, 0.5, 255, 119, 18);
+  g.stroke();
+
+  return new THREE.CanvasTexture(cv);
+}
+
+const CARD_DEFS = [
+  { label: 'Onboarding +34%',  accent: '#6366f1', x: -1.88, y:  0.88, z: 0.2,  ry:  0.16 },
+  { label: 'Retention +18%',   accent: '#22d3ee', x:  1.82, y: -0.20, z: 0.1,  ry: -0.16 },
+  { label: 'Engagement 2.4×',  accent: '#a855f7', x: -1.72, y: -1.05, z: 0.0,  ry:  0.12 },
+];
+
+const cardMeshes = CARD_DEFS.map(d => {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.92, 0.46),
+    new THREE.MeshBasicMaterial({ map: buildCard(d.label, d.accent), transparent: true, opacity: 0.9 })
+  );
+  mesh.position.set(d.x, d.y, d.z);
+  mesh.rotation.y = d.ry;
+  mesh.userData = { baseY: d.y, baseRy: d.ry };
+  scene.add(mesh);
+  return mesh;
+});
+
+/* ── Floating dots ──────────────────────────────────────────────────────── */
+const DOT_COLS = [0x6366f1, 0x22d3ee, 0xa855f7, 0xf472b6, 0x34d399];
+const dotGeo   = new THREE.SphereGeometry(0.026, 8, 8);
+
+const dots = Array.from({ length: 18 }, (_, i) => {
+  const mesh = new THREE.Mesh(
+    dotGeo,
+    new THREE.MeshBasicMaterial({ color: DOT_COLS[i % 5], transparent: true, opacity: 0.5 })
+  );
+  mesh.position.set(
+    (Math.random() - 0.5) * 6.0,
+    (Math.random() - 0.5) * 4.2,
+    (Math.random() - 0.5) * 1.8 - 0.6
+  );
+  mesh.userData.phase = Math.random() * Math.PI * 2;
+  mesh.userData.spd   = 0.28 + Math.random() * 0.42;
+  mesh.userData.baseY = mesh.position.y;
+  scene.add(mesh);
+  return mesh;
+});
+
+/* ── Lighting ───────────────────────────────────────────────────────────── */
+scene.add(new THREE.AmbientLight(0xffffff, 0.38));
+
+const key = new THREE.DirectionalLight(0xffffff, 2.2);
+key.position.set(3, 5, 6);
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0x7c8cf8, 1.1);
+fill.position.set(-4, 1, 3);
+scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0x22d3ee, 0.65);
+rim.position.set(2, -3, -3);
+scene.add(rim);
+
+const backGlow = new THREE.PointLight(0xa855f7, 2.0, 7);
+backGlow.position.set(-1, 0.5, -3);
+scene.add(backGlow);
+
+const scrGlow = new THREE.PointLight(0x6366f1, 1.4, 4.5);
+scrGlow.position.set(0, 0, 1.8);
+scene.add(scrGlow);
+
+/* ── Resize ─────────────────────────────────────────────────────────────── */
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+/* ── Render loop ────────────────────────────────────────────────────────── */
+const clock = new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  // Phone: float + gentle sway
+  phone.position.y = Math.sin(t * 0.65) * 0.07;
+  phone.rotation.y = 0.25 + Math.sin(t * 0.32) * 0.20;
+  phone.rotation.x = Math.sin(t * 0.48) * 0.055;
+  phone.rotation.z = Math.sin(t * 0.27) * 0.018;
+
+  // Stat cards: subtle drift
+  cardMeshes.forEach((m, i) => {
+    m.position.y = m.userData.baseY + Math.sin(t * 0.55 + i * 1.4) * 0.07;
+    m.rotation.y = m.userData.baseRy + Math.sin(t * 0.3 + i) * 0.04;
+  });
+
+  // Dots: drift + opacity pulse
+  dots.forEach(d => {
+    d.position.y = d.userData.baseY + Math.sin(t * d.userData.spd + d.userData.phase) * 0.18;
+    d.material.opacity = 0.28 + 0.26 * Math.sin(t * d.userData.spd * 1.4 + d.userData.phase);
+  });
+
+  // Screen glow pulse
+  scrGlow.intensity = 1.2 + 0.3 * Math.sin(t * 0.9);
+
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>
