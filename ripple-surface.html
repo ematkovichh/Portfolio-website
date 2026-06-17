@@ -29,10 +29,11 @@
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
 renderer.setClearColor(0x060a12, 1);
+// Cap pixel ratio at 2 — no perceptible quality gain beyond 2x, big perf cost on 3x screens
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 function resize() {
   const W = window.innerWidth, H = window.innerHeight;
-  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(W, H);
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
@@ -135,6 +136,8 @@ function updateLines(layer, time) {
   pa.needsUpdate = true;
 }
 
+let frameCount = 0;
+
 function updateSurface(time) {
   let pi = 0, ci = 0;
   for (let i = 0; i < N; i++) {
@@ -147,16 +150,21 @@ function updateSurface(time) {
       pi += 3; ci += 3;
     }
   }
-  posAttr.needsUpdate = true; colAttr.needsUpdate = true;
-  geo.computeVertexNormals();
+  posAttr.needsUpdate = true;
+  colAttr.needsUpdate = true;
+  // Recompute normals every 4 frames — imperceptible visual difference, ~75% CPU saving
+  if (frameCount % 4 === 0) geo.computeVertexNormals();
 }
 
 const ORBIT_R = Math.sqrt(14*14+22*22);
 let t = 0, angle = Math.atan2(22, 0);
+let rafId = null;
+let paused = false;
 
 function animate() {
-  requestAnimationFrame(animate);
-  t += 0.018; angle += 0.003;
+  rafId = requestAnimationFrame(animate);
+  if (paused) return;
+  t += 0.018; angle += 0.003; frameCount++;
   const flat = Math.sqrt(ORBIT_R*ORBIT_R - 14*14);
   camera.position.x = Math.sin(angle) * flat;
   camera.position.z = Math.cos(angle) * flat;
@@ -167,6 +175,17 @@ function animate() {
   updateLines(sharpLayer, t);
   renderer.render(scene, camera);
 }
+
+// Pause when tab is hidden to save CPU/battery
+document.addEventListener('visibilitychange', () => {
+  paused = document.hidden;
+});
+
+// Pause when scrolled out of view (communicated from parent via postMessage)
+window.addEventListener('message', e => {
+  if (e.data === 'pause') paused = true;
+  if (e.data === 'resume') paused = false;
+});
 
 resize();
 window.addEventListener('resize', resize);
