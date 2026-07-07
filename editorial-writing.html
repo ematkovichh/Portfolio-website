@@ -74,7 +74,6 @@ let charIdx     = 0;      // character-level progress for current word
 let phase       = 'typing'; // typing | pause | fadeout
 let phaseTimer  = 0;
 let globalAlpha = 1;
-let wordTimers  = [];      // per-line, per-word: how many chars revealed
 
 // Build a flat revealed-words array per line
 let revealed = [];         // revealed[lineI][wordI] = chars revealed (0…word.length)
@@ -229,8 +228,6 @@ function render(){
       ctx.fillText(partial, x, y);
       ctx.restore();
 
-      // Measure full word for advance (use full word width for spacing)
-      const fullW = ctx.measureText(word.w + ' ').width;
       x += ctx.measureText(partial + ' ').width;
 
       // Blinking cursor after the last typed character

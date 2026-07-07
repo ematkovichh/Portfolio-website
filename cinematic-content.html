@@ -93,6 +93,9 @@ function draw(){
       /* note label */
       if(cw > W * .06){
         ctx.save();
+        // beginPath is required: the current path survives save/restore and
+        // frames, so without it every clip() unions all rects ever added.
+        ctx.beginPath();
         ctx.rect(cx + 6, ty, cw - 10, trackH);
         ctx.clip();
         ctx.font = `300 ${W*.018}px 'DM Mono','Courier New',monospace`;
