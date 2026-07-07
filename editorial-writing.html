@@ -28,7 +28,7 @@ function resize(){
   canvas.height = H * DPR;
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
-window.addEventListener('resize', resize);
+window.addEventListener('resize', () => { resize(); if(REDUCED) render(); });
 resize();
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -139,12 +139,15 @@ function advance(dt){
   }
 }
 
-/* ── Draw ────────────────────────────────────────────────────────────────── */
-function draw(ts){
-  const dt = Math.min(ts - lastTs, 60);
-  lastTs = ts;
-  advance(dt);
+let paused = false;
+window.addEventListener('message', e => {
+  if(e.data === 'pause') paused = true;
+  if(e.data === 'resume') paused = false;
+});
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ── Draw ────────────────────────────────────────────────────────────────── */
+function render(){
   ctx.clearRect(0, 0, W, H);
 
   // Background
@@ -271,11 +274,24 @@ function draw(ts){
   ctx.textBaseline = 'middle';
   ctx.fillText(`0${passageIdx + 1}`, marginL, H * 0.88);
   ctx.restore();
-
-  requestAnimationFrame(draw);
 }
 
-requestAnimationFrame(draw);
+function frame(ts){
+  requestAnimationFrame(frame);
+  if(paused) return;
+  const dt = Math.min(ts - lastTs, 60);
+  lastTs = ts;
+  advance(dt);
+  render();
+}
+
+if(REDUCED){
+  // Static: first passage fully typed, no cycling.
+  while(phase === 'typing') advance(50);
+  render();
+} else {
+  requestAnimationFrame(frame);
+}
 </script>
 </body>
 </html>

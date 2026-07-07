@@ -176,20 +176,27 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// Pause when tab is hidden to save CPU/battery
-document.addEventListener('visibilitychange', () => {
-  paused = document.hidden;
-});
-
-// Pause when scrolled out of view (communicated from parent via postMessage)
+// Pause when scrolled out of view (communicated from parent via postMessage).
+// Tab-hidden pauses come for free: browsers stop rAF in background tabs.
 window.addEventListener('message', e => {
   if (e.data === 'pause') paused = true;
   if (e.data === 'resume') paused = false;
 });
 
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function renderStatic() {
+  t = 2.4;
+  updateSurface(t);
+  updateLines(glowLayer, t);
+  updateLines(sharpLayer, t);
+  geo.computeVertexNormals();
+  renderer.render(scene, camera);
+}
+
 resize();
-window.addEventListener('resize', resize);
-animate();
+window.addEventListener('resize', () => { resize(); if (REDUCED) renderStatic(); });
+if (REDUCED) renderStatic(); else animate();
 </script>
 </body>
 </html>

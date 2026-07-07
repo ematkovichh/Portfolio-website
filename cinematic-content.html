@@ -19,7 +19,7 @@ function resize(){
   W = canvas.width  = canvas.offsetWidth  * Math.min(devicePixelRatio, 2);
   H = canvas.height = canvas.offsetHeight * Math.min(devicePixelRatio, 2);
 }
-window.addEventListener('resize', resize);
+window.addEventListener('resize', () => { resize(); if(REDUCED) draw(); });
 resize();
 
 const TRACKS = [
@@ -29,9 +29,16 @@ const TRACKS = [
 ];
 
 let t = 0;
+let paused = false;
+window.addEventListener('message', e => {
+  if(e.data === 'pause') paused = true;
+  if(e.data === 'resume') paused = false;
+});
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function draw(){
-  requestAnimationFrame(draw);
+  if(!REDUCED) requestAnimationFrame(draw);
+  if(paused) return;
   t += 0.0015;
   const ph = t % 1;
 
@@ -133,6 +140,7 @@ function draw(){
   ctx.textAlign = 'left';
 }
 
+if(REDUCED) t = 0.35; // static mid-timeline frame
 draw();
 </script>
 </body>

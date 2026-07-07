@@ -802,10 +802,34 @@
       `<button class="m-lang ${l.code===active?'active':''}" data-lang="${l.code}"><span style="font-size:16px">${l.flag}</span><span>${l.label}</span></button>`).join("");
   }
 
+  // Pause embed animation loops while their iframe is offscreen.
+  // Embeds listen for "pause"/"resume" via postMessage.
+  const embedIO = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      const win = en.target.contentWindow;
+      if(win) win.postMessage(en.isIntersecting ? "resume" : "pause", "*");
+    });
+  }, { rootMargin: "80px" });
+
+  function observeEmbeds(){
+    embedIO.disconnect();
+    document.querySelectorAll(".media-frame iframe").forEach(f => {
+      embedIO.observe(f);
+      // Lazy iframes may finish loading after the observer already fired;
+      // sync their state once they're ready.
+      f.addEventListener("load", () => {
+        const r = f.getBoundingClientRect();
+        const visible = r.bottom > -80 && r.top < window.innerHeight + 80;
+        if(f.contentWindow) f.contentWindow.postMessage(visible ? "resume" : "pause", "*");
+      });
+    });
+  }
+
   function renderAll(initial){
     document.documentElement.lang = lang;
     applyStatic();
     renderWorks(); renderCaps(); renderMenus(); renderFacts(); renderLangs(lang);
+    observeEmbeds();
     if(!initial){
       // Re-rendered nodes were never observed by the reveal observer —
       // show them immediately instead of replaying entrance animations.
@@ -840,6 +864,7 @@
     const endY=Math.max(0,Math.min(targetY,maxY));
     const diff=endY-startY;
     if(Math.abs(diff)<1) return;
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){ window.scrollTo(0,endY); return; }
     if(rafId) cancelAnimationFrame(rafId);
     let start=null;
     const step=ts=>{ if(start===null)start=ts;
@@ -900,9 +925,10 @@
   // escape closes everything
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeAllDD(); closeMobile(); } });
 
-  // cursor glow
+  // cursor glow (skipped on touch devices and for reduced-motion users)
+  const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const cg=document.getElementById("cursor-glow");
-  if(!window.matchMedia("(hover: none)").matches){
+  if(!window.matchMedia("(hover: none)").matches && !REDUCED_MOTION){
     window.addEventListener("mousemove",e=>{ cg.style.transform=`translate(${e.clientX}px, ${e.clientY}px)`; });
   } else { cg.style.display="none"; }
 

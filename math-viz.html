@@ -30,7 +30,7 @@ function resize(){
   canvas.height = H * DPR;
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
-window.addEventListener('resize', resize);
+window.addEventListener('resize', () => { resize(); if(REDUCED) draw(2.5); });
 resize();
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -57,10 +57,14 @@ function clearGlow(){ ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; }
 
 /* ── Main loop ───────────────────────────────────────────────────────────── */
 let t0 = null;
+let paused = false;
+window.addEventListener('message', e => {
+  if(e.data === 'pause') paused = true;
+  if(e.data === 'resume') paused = false;
+});
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function draw(ts){
-  if(!t0) t0 = ts;
-  const t     = (ts - t0) * 0.001;
+function draw(t){
   const omega = 0.5;            // rad/s
   const angle = t * omega;      // current phase
 
@@ -269,10 +273,16 @@ function draw(ts){
     }
   }
 
-  requestAnimationFrame(draw);
 }
 
-requestAnimationFrame(draw);
+function tick(ts){
+  requestAnimationFrame(tick);
+  if(paused) return;
+  if(t0 === null) t0 = ts;
+  draw((ts - t0) * 0.001);
+}
+
+if(REDUCED) draw(2.5); else requestAnimationFrame(tick);
 </script>
 </body>
 </html>

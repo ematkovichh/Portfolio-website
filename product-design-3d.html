@@ -296,13 +296,21 @@ window.addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
+  if(REDUCED) renderer.render(scene, camera);
 });
 
 /* ── Render loop ────────────────────────────────────────────────────────── */
 const clock = new THREE.Clock();
+let paused = false;
+window.addEventListener('message', e => {
+  if(e.data === 'pause') paused = true;
+  if(e.data === 'resume') paused = false;
+});
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function animate(){
   requestAnimationFrame(animate);
+  if(paused) return;
   const t = clock.getElapsedTime();
 
   // Phone: float + gentle sway
@@ -329,7 +337,13 @@ function animate(){
   renderer.render(scene, camera);
 }
 
-animate();
+if(REDUCED){
+  // Static pose, no float/pulse loop.
+  phone.rotation.y = 0.25;
+  renderer.render(scene, camera);
+} else {
+  animate();
+}
 </script>
 </body>
 </html>
