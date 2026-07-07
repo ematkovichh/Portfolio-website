@@ -223,7 +223,7 @@
     .work-media:hover .media-frame{transform:scale(1.03)}
     .media-frame img{width:100%;height:100%;object-fit:cover;opacity:.65;transition:.55s cubic-bezier(.16,1,.3,1)}
     .work-media:hover .media-frame img{opacity:1;transform:scale(1.04)}
-    .media-frame iframe{width:100%;height:100%;border:0}
+    .media-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
     .work-info{display:flex;flex-direction:column;justify-content:center}
     @media(min-width:768px){.work-info.col5{grid-column:span 5}}
     .work-role{font-size:12px;font-weight:300;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.4);margin-bottom:20px}
@@ -516,7 +516,7 @@
       skills:["Design","Creative Technology"] },
     { id:"03", title:"Math Education Videos",
       desc:"Creating animated math lessons that explain equations, proofs, and concepts through clean visual derivations with readable pacing.",
-      img:"images/project-math-lesson.webp", embed:null,
+      img:"images/project-math-lesson.webp", embed:"math-viz.html",
       role:"Mathematical Animator",
       problem:"Math students struggle with abstract notation because textbooks lack visual intuition for how equations transform step by step.",
       process:"Designed a clean white-canvas style with dark text, smooth transitions between each algebraic step, and pacing tuned for comprehension over speed.",
@@ -524,7 +524,7 @@
       skills:["Mathematical Storytelling","Frontend Engineering"] },
     { id:"04", title:"Editorial Writing",
       desc:"Writing long-form essays and brand narratives that combine research depth with readable, human prose.",
-      img:"images/project-writing.webp", embed:null,
+      img:"images/project-writing.webp", embed:"editorial-writing.html",
       role:"Writer & Editor",
       problem:"Technical publications were either too dense for general readers or too shallow for professionals.",
       process:"Developed a layered writing structure that hooks the reader first, then delivers technical depth without jargon bloat.",
@@ -532,7 +532,7 @@
       skills:["Design","Creative Technology"] },
     { id:"05", title:"Product Design",
       desc:"Designing digital products that feel inevitable — where every interaction, transition, and empty state earns its place.",
-      img:"images/project-product.webp", embed:null,
+      img:"images/project-product.webp", embed:"product-design-3d.html",
       role:"Product Designer",
       problem:"A mobile app had strong backend technology but users abandoned during onboarding due to confusing flows.",
       process:"Redesigned the onboarding and core interaction model using progressive disclosure and tactile micro-interactions.",
@@ -580,9 +580,8 @@
       <div class="work-media col7" data-scroll="skills">
         <div class="halo"></div>
         <div class="media-frame">
-          ${p.embed
-            ? `<iframe src="${p.embed}" title="${p.title}" loading="lazy" allow="accelerometer"></iframe>`
-            : `<img src="${p.img}" alt="${p.title}" loading="lazy" decoding="async">`}
+          <img src="${p.img}" alt="${p.title}" loading="lazy" decoding="async">
+          ${p.embed ? `<iframe src="${p.embed}" title="${p.title}" loading="lazy"></iframe>` : ""}
         </div>
       </div>
       <div class="work-info col5">
