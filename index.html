@@ -111,9 +111,9 @@
       opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s ease;}
     .has-dd.open .dd{opacity:1;visibility:visible;transform:translateY(0)}
     .dd-work{width:288px}.dd-skills{width:240px}.dd-lang{width:176px}
-    .dd button{display:flex;width:100%;text-align:left;padding:12px 20px;font-size:14px;
+    .dd button,.dd a{display:flex;width:100%;text-align:left;padding:12px 20px;font-size:14px;
       text-transform:none;letter-spacing:normal;color:rgba(255,255,255,.8);transition:.25s;align-items:center;justify-content:space-between}
-    .dd button:hover{background:rgba(255,255,255,.07);color:#fff;text-shadow:0 0 16px rgba(255,255,255,.55)}
+    .dd button:hover,.dd a:hover{background:rgba(255,255,255,.07);color:#fff;text-shadow:0 0 16px rgba(255,255,255,.55)}
     .lang-dot{height:6px;width:6px;border-radius:50%;background:#fff}
 
     /* mobile toggle */
@@ -158,8 +158,12 @@
     @media(min-width:768px){main{padding:0 48px}}
     @media(min-width:1024px){main{padding:0 96px}}
     section{position:relative}
+    section[id],.work-grid,.cap{scroll-margin-top:110px}
     .grid12{display:grid;grid-template-columns:1fr;gap:48px}
     @media(min-width:768px){.grid12{grid-template-columns:repeat(12,1fr);gap:32px}}
+    /* Column spans only apply on the 12-col grid; inline spans on a
+       1-col mobile grid would create implicit overflow columns. */
+    @media(min-width:768px){.span4{grid-column:span 4}.span8{grid-column:span 8}}
     .label{font-size:14px;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.75);
       user-select:none;transition:.4s}
     .label:hover{color:#fff;text-shadow:0 0 16px rgba(255,255,255,.4),0 0 40px rgba(255,255,255,.15)}
@@ -346,25 +350,25 @@
   <!-- NAV -->
   <nav>
     <div class="nav-bg"></div>
-    <button class="brand" data-scroll="top">ematkovic.com</button>
+    <a class="brand" href="#" data-scroll="top">ematkovic.com</a>
     <div class="nav-links">
-      <button class="nav-link" data-scroll="about" data-i18n="nav.about">About</button>
+      <a class="nav-link" href="#about" data-scroll="about" data-i18n="nav.about">About</a>
 
       <div class="has-dd" data-dd="work">
-        <button class="nav-link" data-scroll="work" data-dd-toggle>
+        <a class="nav-link" href="#work" data-scroll="work" data-dd-toggle>
           <span data-i18n="nav.work">Work</span> <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
+        </a>
         <div class="dd dd-work" id="dd-work"></div>
       </div>
 
       <div class="has-dd" data-dd="skills">
-        <button class="nav-link" data-scroll="skills" data-dd-toggle>
+        <a class="nav-link" href="#skills" data-scroll="skills" data-dd-toggle>
           <span data-i18n="nav.skills">Skills</span> <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
+        </a>
         <div class="dd dd-skills" id="dd-skills"></div>
       </div>
 
-      <button class="nav-link" data-scroll="contact" data-i18n="nav.hi">Hi!</button>
+      <a class="nav-link" href="#contact" data-scroll="contact" data-i18n="nav.hi">Hi!</a>
 
       <div class="has-dd" data-dd="lang">
         <button class="nav-link" data-dd-toggle aria-label="Change language">
@@ -386,10 +390,10 @@
   <div id="m-menu">
     <div class="m-head"><span class="brand">ematkovic.com</span></div>
     <nav class="m-nav">
-      <button class="m-link" data-scroll="about" data-mobile data-i18n="nav.about">About</button>
-      <button class="m-link" data-scroll="work" data-mobile data-i18n="nav.work">Work</button>
-      <button class="m-link" data-scroll="skills" data-mobile data-i18n="nav.skills">Skills</button>
-      <button class="m-link" data-scroll="contact" data-mobile data-i18n="nav.hi">Hi!</button>
+      <a class="m-link" href="#about" data-scroll="about" data-mobile data-i18n="nav.about">About</a>
+      <a class="m-link" href="#work" data-scroll="work" data-mobile data-i18n="nav.work">Work</a>
+      <a class="m-link" href="#skills" data-scroll="skills" data-mobile data-i18n="nav.skills">Skills</a>
+      <a class="m-link" href="#contact" data-scroll="contact" data-mobile data-i18n="nav.hi">Hi!</a>
       <div style="margin-top:8px;padding-left:4px">
         <span class="m-sub-title" data-i18n="ui.capabilities">Capabilities</span>
         <div id="m-caps" style="display:flex;flex-direction:column;gap:12px"></div>
@@ -437,18 +441,18 @@
           <div class="rule"></div>
           <p data-i18n="ui.role">Design Engineer</p>
         </div>
-        <button class="scroll-pill" data-scroll="about" aria-label="Scroll to explore">
+        <a class="scroll-pill" href="#about" data-scroll="about">
           <span data-i18n="ui.scrollExplore">Scroll to explore</span>
           <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-        </button>
+        </a>
       </div>
     </section>
 
     <!-- ABOUT -->
     <section id="about" class="sec-pad">
       <div class="grid12">
-        <div class="reveal" style="grid-column:span 4;padding-top:4px"><div class="label" data-i18n="labels.ethos">(01) The Ethos</div></div>
-        <div class="stack" style="grid-column:span 8">
+        <div class="reveal span4" style="padding-top:4px"><div class="label" data-i18n="labels.ethos">(01) The Ethos</div></div>
+        <div class="stack span8">
           <h2 class="about-h reveal" data-i18n="about.h">Anyone can ship a screen that looks right. I ship interfaces that prove it. Measured in outcomes, not impressions.</h2>
           <div class="about-body reveal">
             <p data-i18n="about.p1">I'm Eugen Matković, a design engineer based in Berlin. I work at the intersection of visual craft and engineering rigour, building interfaces where nothing is wasted and every detail earns its place.</p>
@@ -461,37 +465,37 @@
           </div>
         </div>
       </div>
-      <button class="sec-arrow" data-scroll="work" aria-label="Scroll to Work">
+      <a class="sec-arrow" href="#work" data-scroll="work">
         <span data-i18n="ui.arrowWork">Work</span>
         <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-      </button>
+      </a>
     </section>
 
     <!-- WORK -->
     <section id="work" class="sec-pad">
       <div class="reveal" style="margin-bottom:80px"><div class="label" data-i18n="labels.works">(02) Selected Works</div></div>
       <div class="works" id="works"></div>
-      <button class="sec-arrow" data-scroll="skills" aria-label="Scroll to Skills">
+      <a class="sec-arrow" href="#skills" data-scroll="skills">
         <span data-i18n="ui.arrowSkills">Skills</span>
         <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-      </button>
+      </a>
     </section>
 
     <!-- SKILLS -->
     <section id="skills" class="sec-pad border-t-soft mt-divider">
       <div class="reveal" style="margin-bottom:64px"><div class="label" data-i18n="labels.caps">(03) Capabilities</div></div>
       <div class="caps" id="caps"></div>
-      <button class="sec-arrow" data-scroll="contact" aria-label="Scroll to other">
+      <a class="sec-arrow" href="#contact" data-scroll="contact">
         <span data-i18n="ui.arrowOther">Other</span>
         <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
-      </button>
+      </a>
     </section>
 
     <!-- CONTACT -->
     <section id="contact" class="border-t-soft mt-divider">
       <div class="grid12">
-        <div class="reveal" style="grid-column:span 4"><div class="label" data-i18n="labels.hi">(04) Hi!</div></div>
-        <div style="grid-column:span 8">
+        <div class="reveal span4"><div class="label" data-i18n="labels.hi">(04) Hi!</div></div>
+        <div class="span8">
           <h2 class="contact-h reveal" data-i18n="contact.h">Let's build something<br>uncompromising.</h2>
           <p class="reveal" data-i18n="contact.p" style="font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;max-width:36rem;margin-bottom:48px;">
             Open to freelance projects, full-time roles, and interesting collaborations. If something here resonated — reach out.
@@ -763,8 +767,8 @@
           <div class="work-row"><div class="row-label">${tr.ui["row.process"]}</div><div class="row-val">${t.process}</div></div>
           <div class="work-row"><div class="row-label">${tr.ui["row.impact"]}</div><div class="row-val accent">${t.impact}</div></div>
         </div>
-        <div class="chips">${p.skills.map(s=>`<button class="chip" data-scroll="skills">${tr.caps[capIdByEn[s]] || s}</button>`).join("")}</div>
-        <button class="explore" data-scroll="skills">${tr.ui["ui.exploreSkills"]} ${arrow}</button>
+        <div class="chips">${p.skills.map(s=>`<a class="chip" href="#skills" data-scroll="skills">${tr.caps[capIdByEn[s]] || s}</a>`).join("")}</div>
+        <a class="explore" href="#skills" data-scroll="skills">${tr.ui["ui.exploreSkills"]} ${arrow}</a>
       </div>
     </div>`;
     }).join("");
@@ -781,9 +785,9 @@
 
   function renderMenus(){
     const tr = I18N[lang];
-    document.getElementById("dd-work").innerHTML = projects.map(p=>`<button data-scroll="project-${p.id}">${p.title}</button>`).join("");
-    document.getElementById("dd-skills").innerHTML = capabilities.map(c=>`<button data-scroll="skill-${c.id}">${tr.caps[c.id]}</button>`).join("");
-    document.getElementById("m-caps").innerHTML = capabilities.map(c=>`<button class="m-cap" data-scroll="skill-${c.id}" data-mobile>${tr.caps[c.id]}</button>`).join("");
+    document.getElementById("dd-work").innerHTML = projects.map(p=>`<a href="#project-${p.id}" data-scroll="project-${p.id}">${p.title}</a>`).join("");
+    document.getElementById("dd-skills").innerHTML = capabilities.map(c=>`<a href="#skill-${c.id}" data-scroll="skill-${c.id}">${tr.caps[c.id]}</a>`).join("");
+    document.getElementById("m-caps").innerHTML = capabilities.map(c=>`<a class="m-cap" href="#skill-${c.id}" data-scroll="skill-${c.id}" data-mobile>${tr.caps[c.id]}</a>`).join("");
   }
 
   function renderFacts(){
@@ -853,6 +857,13 @@
 
   renderAll(true);
 
+  // Deep links: JS-rendered targets (#project-XX, #skill-XX) don't exist at
+  // native anchor-jump time, so position explicitly once everything is built.
+  if(location.hash.length > 1){
+    const target = location.hash.slice(1);
+    requestAnimationFrame(()=>scrollToId(target));
+  }
+
   /* ──────────────────────────────────────────────────────────
      SMOOTH SCROLL
   ────────────────────────────────────────────────────────── */
@@ -874,6 +885,9 @@
     };
     rafId=requestAnimationFrame(step);
   }
+  // The eased scroll must never fight the user: any scroll input cancels it.
+  ["wheel","touchstart","keydown"].forEach(ev=>
+    window.addEventListener(ev,()=>{ if(rafId){ cancelAnimationFrame(rafId); rafId=null; } },{passive:true}));
   function scrollToId(id){
     if(id==="top"){ smoothScrollTo(0); return; }
     const el=document.getElementById(id);
@@ -887,14 +901,17 @@
   /* ──────────────────────────────────────────────────────────
      INTERACTIONS
   ────────────────────────────────────────────────────────── */
-  // delegated scroll buttons
+  // delegated scroll links (anchors keep working without JS; with JS we
+  // take over for the eased scroll + nav offset and reflect the hash)
   document.addEventListener("click", e=>{
     const t=e.target.closest("[data-scroll]");
     if(t){
+      e.preventDefault();
       const id=t.getAttribute("data-scroll");
       if(t.hasAttribute("data-mobile")) closeMobile();
       closeAllDD();
       requestAnimationFrame(()=>scrollToId(id));
+      history.replaceState(null, "", id==="top" ? location.pathname + location.search : "#"+id);
       return;
     }
     const l=e.target.closest("[data-lang]");
