@@ -36,307 +36,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono&family=Space+Grotesk:wght@500&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#000;
-      --fg:#fff;
-      --panel:#101014;
-    }
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{
-      background:var(--bg);
-      color:var(--fg);
-      font-family:'Inter',system-ui,sans-serif;
-      -webkit-font-smoothing:antialiased;
-      overflow-x:hidden;
-      min-height:100vh;
-    }
-    ::selection{background:#fff;color:#000}
-    a{color:inherit;text-decoration:none}
-    button{font-family:inherit;background:none;border:none;color:inherit;cursor:pointer}
-    img{display:block}
-    .mono{font-family:'DM Mono',monospace}
-
-    /* ── scroll progress bar ── */
-    #progress{
-      position:fixed;top:0;left:0;height:1.5px;width:100%;
-      background:rgba(255,255,255,.6);transform-origin:left;transform:scaleX(0);
-      z-index:200;
-    }
-
-    /* ── ambient glows ── */
-    #glow-layer{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-    .glow{position:absolute;border-radius:50%;will-change:transform}
-    #cursor-glow{
-      width:220px;height:220px;left:0;top:0;margin-left:-110px;margin-top:-110px;
-      background:radial-gradient(circle,rgba(99,102,241,.18) 0%,rgba(139,92,246,.09) 50%,transparent 70%);
-      filter:blur(24px);transition:transform .2s cubic-bezier(.16,1,.3,1);
-    }
-    #glow-2{
-      width:480px;height:480px;top:-80px;right:-60px;
-      background:radial-gradient(circle,rgba(45,212,191,.09) 0%,rgba(16,185,129,.04) 50%,transparent 70%);
-      filter:blur(70px);animation:float2 14s ease-in-out infinite;
-    }
-    #glow-3{
-      width:360px;height:360px;bottom:10%;left:-60px;
-      background:radial-gradient(circle,rgba(239,68,68,.07) 0%,rgba(217,70,239,.04) 50%,transparent 70%);
-      filter:blur(60px);animation:float3 18s ease-in-out infinite;
-    }
-    @keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,40px)}}
-    @keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-50px)}}
-
-    /* ── nav ── */
-    nav{position:fixed;top:0;width:100%;z-index:50;height:64px;
-      display:flex;justify-content:space-between;align-items:center;padding:0 24px}
-    @media(min-width:768px){nav{padding:0 40px}}
-    .nav-bg{position:absolute;inset:0;background:rgba(0,0,0,.7);
-      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-      border-bottom:1px solid rgba(255,255,255,.07)}
-    .brand{position:relative;font-weight:600;font-size:16px;letter-spacing:-.01em;color:#fff}
-    .nav-links{position:relative;display:none;align-items:center;gap:32px;
-      font-size:12px;text-transform:uppercase;letter-spacing:.15em}
-    @media(min-width:768px){.nav-links{display:flex}}
-    .nav-link{color:rgba(255,255,255,.75);transition:color .3s,text-shadow .3s;display:flex;align-items:center;gap:6px}
-    .nav-link:hover{color:#fff;text-shadow:0 0 18px rgba(255,255,255,.5)}
-    .chev{width:14px;height:14px;opacity:.7;transition:transform .25s}
-    .has-dd{position:relative}
-    .has-dd.open .chev{transform:rotate(180deg)}
-    .dd{position:absolute;top:100%;right:0;margin-top:12px;
-      background:rgba(16,16,20,.95);border:1px solid rgba(255,255,255,.15);
-      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      padding:8px 0;border-radius:12px;box-shadow:0 25px 50px -12px rgba(0,0,0,.6);
-      opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s ease;}
-    .has-dd.open .dd{opacity:1;visibility:visible;transform:translateY(0)}
-    .dd-work{width:288px}.dd-skills{width:240px}.dd-lang{width:176px}
-    .dd button,.dd a{display:flex;width:100%;text-align:left;padding:12px 20px;font-size:14px;
-      text-transform:none;letter-spacing:normal;color:rgba(255,255,255,.8);transition:.25s;align-items:center;justify-content:space-between}
-    .dd button:hover,.dd a:hover{background:rgba(255,255,255,.07);color:#fff;text-shadow:0 0 16px rgba(255,255,255,.55)}
-    .lang-dot{height:6px;width:6px;border-radius:50%;background:#fff}
-
-    /* mobile toggle */
-    #m-toggle{position:fixed;top:0;right:24px;z-index:130;height:64px;
-      display:flex;align-items:center;justify-content:center}
-    @media(min-width:768px){#m-toggle{display:none}}
-    #m-toggle .circle{display:flex;align-items:center;justify-content:center;width:40px;height:40px;
-      border-radius:50%;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);transition:.3s}
-    #m-toggle:hover .circle{color:rgba(255,255,255,.9);border-color:rgba(255,255,255,.3)}
-    #m-toggle.open .circle{transform:rotate(180deg)}
-
-    /* mobile menu */
-    #m-menu{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.98);
-      backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);overflow-y:auto;
-      opacity:0;visibility:hidden;transition:opacity .2s}
-    #m-menu.open{opacity:1;visibility:visible}
-    .m-head{display:flex;align-items:center;height:64px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.1)}
-    .m-nav{padding:32px 24px 64px;display:flex;flex-direction:column;gap:24px}
-    .m-link{text-align:left;font-size:24px;font-weight:500;letter-spacing:-.01em;
-      color:rgba(255,255,255,.8);padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-    .m-link:active{color:#fff}
-    .m-sub-title{margin-bottom:16px;display:block;font-size:.65rem;font-weight:300;
-      text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.3)}
-    .m-cap{text-align:left;font-size:16px;font-weight:300;color:rgba(255,255,255,.55)}
-    .m-langs{display:flex;gap:12px;flex-wrap:wrap}
-    .m-lang{display:flex;align-items:center;gap:8px;border-radius:8px;padding:10px 16px;font-size:14px;
-      font-weight:500;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);transition:.2s}
-    .m-lang.active{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff}
-
-    /* scroll-to-top */
-    #to-top{position:fixed;bottom:32px;right:32px;z-index:50;display:flex;flex-direction:column;
-      align-items:center;gap:6px;opacity:0;visibility:hidden;transform:translateY(12px);transition:.4s}
-    #to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
-    #to-top .ic{color:rgba(255,255,255,.45);transition:color .4s;animation:bob 1.9s ease-in-out infinite}
-    #to-top:hover .ic{color:rgba(255,255,255,.9)}
-    #to-top span{font-size:9px;font-weight:300;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.4);transition:color .4s}
-    #to-top:hover span{color:rgba(255,255,255,.8)}
-    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-
-    /* layout */
-    main{position:relative;z-index:10;max-width:1400px;margin:0 auto;padding:0 24px}
-    @media(min-width:768px){main{padding:0 48px}}
-    @media(min-width:1024px){main{padding:0 96px}}
-    section{position:relative}
-    section[id],.work-grid,.cap{scroll-margin-top:110px}
-    .grid12{display:grid;grid-template-columns:1fr;gap:48px}
-    @media(min-width:768px){.grid12{grid-template-columns:repeat(12,1fr);gap:32px}}
-    /* Column spans only apply on the 12-col grid; inline spans on a
-       1-col mobile grid would create implicit overflow columns. */
-    @media(min-width:768px){.span4{grid-column:span 4}.span8{grid-column:span 8}}
-    .label{font-size:14px;font-weight:400;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.75);
-      user-select:none;transition:.4s}
-    .skip-link{position:fixed;top:8px;left:8px;z-index:300;background:#fff;color:#000;
-      padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;
-      transform:translateY(-200%);transition:transform .2s}
-    .skip-link:focus{transform:none}
-    .label:hover{color:#fff;text-shadow:0 0 16px rgba(255,255,255,.4),0 0 40px rgba(255,255,255,.15)}
-
-    /* hero */
-    #hero{height:100dvh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-    #hero-inner{position:relative;z-index:10}
-    .hero-lines{position:absolute;inset:0;z-index:0;pointer-events:none;filter:blur(9px);
-      animation:lineFloat 18s ease-in-out infinite}
-    @keyframes lineFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
-    h1.name{line-height:.9;margin-left:-2px;font-weight:600;color:#ebebeb;
-      font-size:clamp(3rem,12vw,11rem);letter-spacing:-.02em;cursor:default;user-select:none}
-    h1.name .nl{display:block}
-    h1.name .letter{display:inline-block}
-
-    /* wave on load */
-    @keyframes nameWave{0%,100%{transform:translateY(0)}40%{transform:translateY(-.18em)}}
-    h1.name.wave-in .letter{animation:nameWave .7s cubic-bezier(.22,1,.36,1) both;
-      animation-delay:calc(var(--i) * 55ms + 300ms)}
-
-    /* skew ripple on hover */
-    h1.name .letter{transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .3s;transition-delay:calc(var(--i)*22ms)}
-    h1.name:hover .letter{transform:skewX(-10deg) translateY(-.08em);opacity:.6}
-    h1.name:hover .letter:hover{transform:skewX(0deg) translateY(-.1em);opacity:1;transition-delay:0ms}
-
-    @media(prefers-reduced-motion:reduce){
-      h1.name .letter{animation:none!important;transition:none!important}
-    }
-    .hero-role{margin-top:40px;display:flex;align-items:center;gap:24px}
-    .hero-role .rule{height:1px;width:48px;background:rgba(255,255,255,.25)}
-    .hero-role p{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:500;
-      text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.65)}
-    .scroll-pill{margin-top:48px;display:inline-flex;align-items:center;gap:12px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.03);
-      backdrop-filter:blur(4px);padding:10px 16px 10px 20px;transition:.4s}
-    .scroll-pill:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.06)}
-    .scroll-pill span{font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.55);transition:.4s}
-    .scroll-pill:hover span{color:rgba(255,255,255,.9)}
-    .scroll-pill .ic{color:rgba(255,255,255,.4);animation:bob 1.9s ease-in-out infinite;transition:color .4s}
-    .scroll-pill:hover .ic{color:rgba(255,255,255,.8)}
-
-    .sec-pad{padding-top:128px}
-    @media(min-width:768px){.sec-pad{padding-top:192px}}
-    .border-t-soft{border-top:1px solid rgba(255,255,255,.1)}
-    .mt-divider{margin-top:80px}
-    @media(min-width:768px){.mt-divider{margin-top:112px}}
-
-    /* about */
-    .about-h{font-size:clamp(1.5rem,4vw,3rem);font-weight:400;line-height:1.15;
-      letter-spacing:-.01em;color:rgba(255,255,255,.95)}
-    .about-body{font-size:18px;line-height:1.8;color:rgba(255,255,255,.65);max-width:42rem}
-    .about-body p+p{margin-top:20px}
-    .about-meta{display:flex;flex-wrap:wrap;gap:24px 48px;border-top:1px solid rgba(255,255,255,.1);padding-top:40px}
-    .meta-label{font-size:12px;font-weight:300;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.4);margin-bottom:8px}
-    .meta-val{font-size:14px;font-weight:500;color:rgba(255,255,255,.8)}
-    .stack{display:flex;flex-direction:column;gap:40px}
-
-    /* section arrow */
-    .sec-arrow{display:inline-flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:80px}
-    @media(min-width:768px){.sec-arrow{margin-top:112px}}
-    .sec-arrow span{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.55);transition:color .4s}
-    .sec-arrow:hover span{color:rgba(255,255,255,.9)}
-    .sec-arrow .ic{color:rgba(255,255,255,.4);animation:bob 1.9s ease-in-out infinite;transition:color .4s}
-    .sec-arrow:hover .ic{color:rgba(255,255,255,.8)}
-
-    /* work */
-    .works{display:flex;flex-direction:column;gap:112px}
-    @media(min-width:768px){.works{gap:144px}}
-    .work-grid{display:grid;grid-template-columns:1fr;gap:32px;align-items:center}
-    @media(min-width:768px){.work-grid{grid-template-columns:repeat(12,1fr);gap:48px}}
-    .work-media{position:relative;cursor:pointer;margin:0 -24px}
-    @media(min-width:768px){.work-media{margin:0}.work-media.col7{grid-column:span 7}}
-    .work-media .halo{position:absolute;inset:-16px;pointer-events:none;border-radius:2rem;
-      background:radial-gradient(ellipse at 50% 45%,rgba(186,230,253,.45) 0%,rgba(221,214,254,.32) 38%,rgba(251,207,232,.22) 60%,rgba(255,255,255,0) 78%);
-      filter:blur(48px);opacity:0;transform:scale(.92);transition:.6s cubic-bezier(.16,1,.3,1)}
-    @media(min-width:768px){.work-media .halo{inset:-32px}}
-    .work-media:hover .halo{opacity:1;transform:scale(1)}
-    .media-frame{overflow:hidden;border-radius:0;background:#060a12;position:relative;aspect-ratio:16/10;
-      transition:transform .55s cubic-bezier(.16,1,.3,1)}
-    @media(min-width:768px){.media-frame{border-radius:16px}}
-    .work-media:hover .media-frame{transform:scale(1.03)}
-    .media-frame img{width:100%;height:100%;object-fit:cover;opacity:.65;transition:.55s cubic-bezier(.16,1,.3,1)}
-    .work-media:hover .media-frame img{opacity:1;transform:scale(1.04)}
-    .media-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-    .work-info{display:flex;flex-direction:column;justify-content:center}
-    @media(min-width:768px){.work-info.col5{grid-column:span 5}}
-    .work-role{font-size:12px;font-weight:300;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.4);margin-bottom:20px}
-    .work-title{font-size:clamp(1.25rem,3vw,1.875rem);font-weight:700;letter-spacing:-.02em;margin-bottom:16px;color:#fff}
-    .work-desc{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:24px;max-width:24rem;line-height:1.7}
-    .work-rows{display:flex;flex-direction:column;gap:16px;margin-bottom:32px;border-top:1px solid rgba(255,255,255,.1);padding-top:24px;max-width:28rem}
-    .work-row{display:grid;grid-template-columns:4.5rem 1fr;gap:16px}
-    .row-label{font-size:.65rem;font-weight:300;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.35);padding-top:.15rem}
-    .row-val{font-size:14px;line-height:1.6;color:rgba(255,255,255,.6)}
-    .row-val.accent{color:rgba(255,255,255,.9);font-weight:500}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
-    .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.03);padding:4px 12px;font-size:.65rem;font-weight:300;text-transform:uppercase;
-      letter-spacing:.15em;color:rgba(255,255,255,.5);transition:.3s}
-    .chip:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8);transform:translateY(-1px)}
-    .explore{display:inline-flex;align-items:center;gap:12px;font-size:12px;text-transform:uppercase;
-      letter-spacing:.18em;width:fit-content;color:rgba(255,255,255,.4);transition:color .3s}
-    .explore:hover{color:#fff}
-
-    /* skills */
-    .caps{border-top:1px solid transparent}
-    .cap{display:grid;grid-template-columns:1fr;gap:16px;padding:24px 0;align-items:center;border-top:1px solid rgba(255,255,255,.06)}
-    @media(min-width:768px){.cap{grid-template-columns:repeat(12,1fr);gap:32px;padding:28px 0}}
-    .cap-head{display:flex;align-items:center;gap:16px}
-    @media(min-width:768px){.cap-head{grid-column:span 4}}
-    .cap-num{font-size:10px;font-weight:300;color:rgba(255,255,255,.2);letter-spacing:.1em;font-variant-numeric:tabular-nums}
-    .cap-name{font-size:14px;font-weight:500;letter-spacing:-.01em;color:rgba(255,255,255,.8)}
-    .cap-items{display:flex;flex-wrap:wrap;gap:6px 32px}
-    @media(min-width:768px){.cap-items{grid-column:span 8}}
-    .cap-item{font-size:14px;font-weight:300;color:rgba(255,255,255,.6);transition:.3s}
-    .cap-item:hover{color:#fff;text-shadow:0 0 12px rgba(255,255,255,.5),0 0 30px rgba(255,255,255,.2)}
-
-    /* contact */
-    #contact{padding:128px 0}
-    @media(min-width:768px){#contact{padding:192px 0}}
-    .contact-h{font-size:clamp(1.875rem,5vw,3.75rem);font-weight:400;letter-spacing:-.02em;line-height:1.1;margin-bottom:32px;color:#fff}
-    .socials{display:flex;flex-wrap:wrap;gap:16px 32px;border-top:1px solid rgba(255,255,255,.1);padding-top:48px}
-    .social{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.55);
-      display:flex;align-items:center;gap:8px;opacity:.85;transition:.5s}
-    .social:hover{opacity:1;color:#fff}
-
-    /* fun facts */
-    .fact-card{padding:32px;background:rgba(255,255,255,.015);transition:.35s;cursor:default}
-    .fact-card:hover{background:rgba(255,255,255,.04)}
-    .fact-num{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.15em;margin-bottom:16px}
-    .fact-text{font-size:15px;line-height:1.65;color:rgba(255,255,255,.65)}
-    .fact-text em{font-style:normal;color:#fff;font-weight:500}
-
-    /* reveal */
-    .reveal{opacity:0;transform:translateY(24px);filter:blur(8px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1),filter .85s cubic-bezier(.16,1,.3,1)}
-    .reveal.in{opacity:1;transform:none;filter:none}
-    .reveal-scale{opacity:0;transform:scale(.94);filter:blur(14px);transition:opacity 1.1s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1),filter 1.1s cubic-bezier(.16,1,.3,1)}
-    .reveal-scale.in{opacity:1;transform:none;filter:none}
-
-    /* ── mobile layout B: list with thumbnails ── */
-    @media(max-width:767px){
-      .works{gap:0;border-top:1px solid rgba(255,255,255,.07)}
-      .work-grid{
-        display:flex;flex-direction:row;align-items:center;
-        gap:16px;padding:16px 0;
-        border-bottom:1px solid rgba(255,255,255,.07);
-      }
-      .work-media{
-        margin:0;width:80px;flex-shrink:0;
-      }
-      .media-frame{
-        border-radius:8px!important;aspect-ratio:4/3;
-      }
-      .media-frame iframe{display:none}
-      .media-frame img{opacity:.85}
-      .work-info{flex:1;min-width:0;justify-content:center}
-      .work-role{margin-bottom:6px;font-size:10px}
-      .work-title{font-size:15px;margin-bottom:0}
-      .work-rows,.work-desc,.chips,.explore{display:none}
-      .work-grid::after{content:'›';color:rgba(255,255,255,.2);font-size:20px;flex-shrink:0}
-      h1.name{font-size:clamp(2.6rem,14vw,5rem);letter-spacing:-.03em}
-    }
-    @media(max-width:380px){
-      main{padding:0 16px}
-      .work-media{width:64px}
-    }
-
-    @media(prefers-reduced-motion:reduce){
-      *{animation:none!important}
-      .reveal,.reveal-scale{opacity:1;transform:none;filter:none;transition:none}
-    }
-    :focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:3px;border-radius:4px}
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="ui.skip">Skip to content</a>
@@ -518,221 +218,16 @@
     </section>
   </main>
 
+  <script src="data.js"></script>
   <script>
-  /* ──────────────────────────────────────────────────────────
-     DATA  (edit these arrays to change your content)
-  ────────────────────────────────────────────────────────── */
-  const projects = [
-    { id:"01", title:"Math-To-Manim", img:"images/project-math-story.webp", embed:"ripple-surface.html",
-      skills:["Mathematical Storytelling","Creative Technology"] },
-    { id:"02", title:"Cinematic Content", img:"images/project-video.webp", embed:"cinematic-content.html",
-      skills:["Design","Creative Technology"] },
-    { id:"03", title:"Math Education Videos", img:"images/project-math-lesson.webp", embed:"math-viz.html",
-      skills:["Mathematical Storytelling","Frontend Engineering"] },
-    { id:"04", title:"Editorial Writing", img:"images/project-writing.webp", embed:"editorial-writing.html",
-      skills:["Design","Creative Technology"] },
-    { id:"05", title:"Product Design", img:"images/project-product.webp", embed:"product-design-3d.html",
-      skills:["Design","Frontend Engineering"] },
-  ];
-
-  const capabilities = [
-    { id:"01", items:["UI/UX Design","Design Systems","Visual Identity"] },
-    { id:"02", items:["React","TypeScript","Performance Optimization"] },
-    { id:"03", items:["AI Workflows","Prompt Engineering","Automation Systems"] },
-    { id:"04", items:["Motion Design","Creative Coding","Interactive Experiences"] },
-    { id:"05", items:["Manim","NumPy","Python","Procedural Animation","Mathematical Visualization"] },
-    { id:"06", items:["Systems Design","UX for Games","Prototyping"] },
-  ];
-
-  const languages = [
-    { code:"en", label:"English",  short:"EN", flag:"🇬🇧" },
-    { code:"de", label:"Deutsch",  short:"DE", flag:"🇩🇪" },
-    { code:"hr", label:"Hrvatski", short:"HR", flag:"🇭🇷" },
-  ];
-
-  /* All user-facing text lives here, one dict per language. */
-  const I18N = {
-    en: {
-      ui: {
-        "nav.about":"About", "nav.work":"Work", "nav.skills":"Skills", "nav.hi":"Hi!",
-        "ui.capabilities":"Capabilities", "ui.language":"Language", "ui.top":"Top",
-        "ui.scrollExplore":"Scroll to explore", "ui.role":"Design Engineer",
-        "ui.arrowWork":"Work", "ui.arrowSkills":"Skills", "ui.arrowOther":"Other",
-        "ui.skip":"Skip to content",
-        "labels.ethos":"(01) The Ethos", "labels.works":"(02) Selected Works",
-        "labels.caps":"(03) Capabilities", "labels.hi":"(04) Hi!", "labels.facts":"(05) Random Facts",
-        "about.h":"Anyone can ship a screen that looks right. I ship interfaces that prove it. Measured in outcomes, not impressions.",
-        "about.p1":"I'm Eugen Matković, a design engineer based in Berlin. I work at the intersection of visual craft and engineering rigour, building interfaces where nothing is wasted and every detail earns its place.",
-        "about.p2":"Fluent in English, German, and Croatian, I bring a cross-cultural sensibility to projects spanning design systems, creative technology, and intelligent automation.",
-        "meta.langsLabel":"Languages", "meta.langsVal":"English · German · Croatian",
-        "meta.basedLabel":"Based in", "meta.basedVal":"Berlin",
-        "meta.availLabel":"Available for", "meta.availVal":"Freelance · Full-time",
-        "row.problem":"Problem", "row.process":"Process", "row.impact":"Impact",
-        "ui.exploreSkills":"Explore Skills",
-        "contact.h":"Let's build something<br>uncompromising.",
-        "contact.p":"Open to freelance projects, full-time roles, and interesting collaborations. If something here resonated — reach out.",
-      },
-      caps: { "01":"Design", "02":"Frontend Engineering", "03":"AI & Automation",
-              "04":"Creative Technology", "05":"Mathematical Storytelling", "06":"Game Design" },
-      projects: {
-        "01": { role:"Systems Designer & Animator",
-          desc:"A software pipeline that transforms plain-English math topics into fully rendered educational animations — without writing a single line of animation code manually.",
-          problem:"Creating mathematical animations requires both deep domain knowledge and animation programming expertise — a combination few people have.",
-          process:"Built a multi-stage reasoning architecture that analyzes a topic, plans scenes and camera movements, generates validated Manim/Python code, and renders the final MP4 automatically. Featured: Ripple Surface Visualization — a real-time 3D wave surface, rendered with WebGL and Three.js with an orbiting camera.",
-          impact:"End-to-end animation pipeline from plain English to rendered video. Zero manual animation work required." },
-        "02": { role:"Director & Editor",
-          desc:"Directing and editing short-form cinematic content with a focus on pacing, visual rhythm, and emotional storytelling.",
-          problem:"Emerging creators needed cinematic quality without the budget for a full production studio.",
-          process:"Developed a modular workflow system combining careful pre-planning, deliberate pacing, and refined post-production that scales from solo to team.",
-          impact:"Content reached 2M+ organic views and three pieces were featured by major streaming platforms." },
-        "03": { role:"Mathematical Animator",
-          desc:"Creating animated math lessons that explain equations, proofs, and concepts through clean visual derivations with readable pacing.",
-          problem:"Math students struggle with abstract notation because textbooks lack visual intuition for how equations transform step by step.",
-          process:"Designed a clean white-canvas style with dark text, smooth transitions between each algebraic step, and pacing tuned for comprehension over speed.",
-          impact:"Two videos surpassed 500K views on academic platforms. Used as supplementary material in three university calculus courses." },
-        "04": { role:"Writer & Editor",
-          desc:"Writing long-form essays and brand narratives that combine research depth with readable, human prose.",
-          problem:"Technical publications were either too dense for general readers or too shallow for professionals.",
-          process:"Developed a layered writing structure that hooks the reader first, then delivers technical depth without jargon bloat.",
-          impact:"Three essays crossed 100K+ reads. One piece was cited in a university design curriculum." },
-        "05": { role:"Product Designer",
-          desc:"Designing digital products that feel inevitable — where every interaction, transition, and empty state earns its place.",
-          problem:"A mobile app had strong backend technology but users abandoned during onboarding due to confusing flows.",
-          process:"Redesigned the onboarding and core interaction model using progressive disclosure and tactile micro-interactions.",
-          impact:"Onboarding completion increased 34% and 30-day retention improved by 18% after the redesign." },
-      },
-      facts: [
-        "I've been gaming since I was <em>9</em> — and by 14 I was already redesigning every UI I thought looked wrong, starting with forum signatures.",
-        "I grew up speaking Croatian at home, German at school, and English on the internet. Three languages, <em>zero accent awareness</em>.",
-        "I still play games to this day — mostly <em>strategy and FPS</em>. It's where half my instincts about feedback and timing actually come from.",
-        "I type faster when I'm stuck on a problem than when I know the answer — something about the <em>pressure</em> makes the fingers go.",
-      ],
-    },
-    de: {
-      ui: {
-        "nav.about":"Über mich", "nav.work":"Projekte", "nav.skills":"Skills", "nav.hi":"Hallo!",
-        "ui.capabilities":"Kompetenzen", "ui.language":"Sprache", "ui.top":"Nach oben",
-        "ui.scrollExplore":"Scrollen zum Entdecken", "ui.role":"Design Engineer",
-        "ui.arrowWork":"Projekte", "ui.arrowSkills":"Kompetenzen", "ui.arrowOther":"Weiteres",
-        "ui.skip":"Zum Inhalt springen",
-        "labels.ethos":"(01) Das Ethos", "labels.works":"(02) Ausgewählte Arbeiten",
-        "labels.caps":"(03) Kompetenzen", "labels.hi":"(04) Hallo!", "labels.facts":"(05) Zufällige Fakten",
-        "about.h":"Jeder kann einen Screen bauen, der richtig aussieht. Ich baue Interfaces, die es beweisen. Gemessen an Ergebnissen, nicht an Eindrücken.",
-        "about.p1":"Ich bin Eugen Matković, Design Engineer aus Berlin. Ich arbeite an der Schnittstelle von visuellem Handwerk und technischer Präzision und baue Interfaces, in denen nichts verschwendet wird und jedes Detail seinen Platz verdient.",
-        "about.p2":"Fließend in Englisch, Deutsch und Kroatisch bringe ich ein interkulturelles Gespür in Projekte ein — von Designsystemen über Creative Technology bis zu intelligenter Automatisierung.",
-        "meta.langsLabel":"Sprachen", "meta.langsVal":"Englisch · Deutsch · Kroatisch",
-        "meta.basedLabel":"Standort", "meta.basedVal":"Berlin",
-        "meta.availLabel":"Verfügbar für", "meta.availVal":"Freelance · Festanstellung",
-        "row.problem":"Problem", "row.process":"Prozess", "row.impact":"Wirkung",
-        "ui.exploreSkills":"Kompetenzen entdecken",
-        "contact.h":"Lass uns etwas<br>Kompromissloses bauen.",
-        "contact.p":"Offen für Freelance-Projekte, Festanstellungen und spannende Kollaborationen. Wenn dich hier etwas angesprochen hat — melde dich.",
-      },
-      caps: { "01":"Design", "02":"Frontend-Entwicklung", "03":"KI & Automatisierung",
-              "04":"Creative Technology", "05":"Mathematisches Storytelling", "06":"Game Design" },
-      projects: {
-        "01": { role:"Systemdesigner & Animator",
-          desc:"Eine Software-Pipeline, die mathematische Themen in einfacher Sprache in fertig gerenderte Lernanimationen verwandelt — ohne eine einzige Zeile Animationscode von Hand zu schreiben.",
-          problem:"Mathematische Animationen erfordern tiefes Fachwissen und Erfahrung in Animationsprogrammierung — eine Kombination, die nur wenige mitbringen.",
-          process:"Mehrstufige Reasoning-Architektur, die ein Thema analysiert, Szenen und Kamerafahrten plant, validierten Manim/Python-Code generiert und das fertige MP4 automatisch rendert. Featured: Ripple Surface Visualization — eine 3D-Wellenoberfläche in Echtzeit, gerendert mit WebGL und Three.js mit orbitierender Kamera.",
-          impact:"End-to-End-Animationspipeline von einfacher Sprache zum fertigen Video. Null manuelle Animationsarbeit nötig." },
-        "02": { role:"Regie & Schnitt",
-          desc:"Regie und Schnitt für filmische Kurzformate mit Fokus auf Pacing, visuellem Rhythmus und emotionalem Storytelling.",
-          problem:"Aufstrebende Creator brauchten filmische Qualität ohne das Budget für ein komplettes Produktionsstudio.",
-          process:"Modulares Workflow-System aus sorgfältiger Vorplanung, bewusstem Pacing und präziser Postproduktion, das von Solo bis Team skaliert.",
-          impact:"Inhalte erreichten über 2 Mio. organische Views; drei Arbeiten wurden von großen Streaming-Plattformen featured." },
-        "03": { role:"Mathematischer Animator",
-          desc:"Animierte Mathe-Lektionen, die Gleichungen, Beweise und Konzepte durch klare visuelle Herleitungen in lesbarem Tempo erklären.",
-          problem:"Studierende kämpfen mit abstrakter Notation, weil Lehrbüchern die visuelle Intuition dafür fehlt, wie sich Gleichungen Schritt für Schritt umformen.",
-          process:"Klarer White-Canvas-Stil mit dunkler Schrift, weichen Übergängen zwischen den algebraischen Schritten und einem Tempo, das Verständnis über Geschwindigkeit stellt.",
-          impact:"Zwei Videos überschritten 500.000 Views auf akademischen Plattformen. Eingesetzt als Zusatzmaterial in drei Analysis-Kursen an Universitäten." },
-        "04": { role:"Autor & Redakteur",
-          desc:"Langform-Essays und Markennarrative, die Recherchetiefe mit lesbarer, menschlicher Prosa verbinden.",
-          problem:"Fachpublikationen waren entweder zu dicht für ein breites Publikum oder zu oberflächlich für Profis.",
-          process:"Mehrschichtige Textstruktur, die Lesende zuerst packt und dann technische Tiefe ohne Jargon liefert.",
-          impact:"Drei Essays überschritten 100.000 Reads. Ein Text wurde in einem universitären Design-Curriculum zitiert." },
-        "05": { role:"Produktdesigner",
-          desc:"Digitale Produkte, die sich zwangsläufig richtig anfühlen — jede Interaktion, jeder Übergang und jeder Empty State verdient seinen Platz.",
-          problem:"Eine Mobile-App hatte starke Backend-Technologie, aber Nutzer sprangen im Onboarding wegen verwirrender Flows ab.",
-          process:"Onboarding und Kern-Interaktionsmodell mit Progressive Disclosure und taktilen Mikrointeraktionen neu gestaltet.",
-          impact:"Onboarding-Abschlüsse stiegen um 34 %, die 30-Tage-Retention verbesserte sich nach dem Redesign um 18 %." },
-      },
-      facts: [
-        "Ich game seit ich <em>9</em> bin — und mit 14 habe ich schon jedes UI umgestaltet, das ich falsch fand, angefangen bei Forensignaturen.",
-        "Aufgewachsen mit Kroatisch zu Hause, Deutsch in der Schule und Englisch im Internet. Drei Sprachen, <em>null Bewusstsein für Akzente</em>.",
-        "Ich spiele bis heute — vor allem <em>Strategie und FPS</em>. Daher kommt die Hälfte meiner Instinkte für Feedback und Timing.",
-        "Ich tippe schneller, wenn ich an einem Problem festhänge, als wenn ich die Antwort kenne — irgendwas am <em>Druck</em> bringt die Finger in Gang.",
-      ],
-    },
-    hr: {
-      ui: {
-        "nav.about":"O meni", "nav.work":"Radovi", "nav.skills":"Vještine", "nav.hi":"Bok!",
-        "ui.capabilities":"Vještine", "ui.language":"Jezik", "ui.top":"Vrh",
-        "ui.scrollExplore":"Skrolaj i istraži", "ui.role":"Design Engineer",
-        "ui.arrowWork":"Radovi", "ui.arrowSkills":"Vještine", "ui.arrowOther":"Ostalo",
-        "ui.skip":"Preskoči na sadržaj",
-        "labels.ethos":"(01) Etos", "labels.works":"(02) Odabrani radovi",
-        "labels.caps":"(03) Vještine", "labels.hi":"(04) Bok!", "labels.facts":"(05) Nasumične činjenice",
-        "about.h":"Svatko može isporučiti ekran koji izgleda dobro. Ja isporučujem sučelja koja to dokazuju. Mjereno rezultatima, a ne dojmovima.",
-        "about.p1":"Ja sam Eugen Matković, design engineer iz Berlina. Radim na sjecištu vizualnog zanata i inženjerske discipline, gradeći sučelja u kojima ništa nije suvišno i svaki detalj zaslužuje svoje mjesto.",
-        "about.p2":"Tečno govorim engleski, njemački i hrvatski te unosim međukulturni senzibilitet u projekte koji obuhvaćaju dizajn-sustave, kreativnu tehnologiju i inteligentnu automatizaciju.",
-        "meta.langsLabel":"Jezici", "meta.langsVal":"Engleski · Njemački · Hrvatski",
-        "meta.basedLabel":"Lokacija", "meta.basedVal":"Berlin",
-        "meta.availLabel":"Dostupan za", "meta.availVal":"Freelance · Puno radno vrijeme",
-        "row.problem":"Problem", "row.process":"Proces", "row.impact":"Učinak",
-        "ui.exploreSkills":"Istraži vještine",
-        "contact.h":"Izgradimo nešto<br>beskompromisno.",
-        "contact.p":"Otvoren za freelance projekte, stalne pozicije i zanimljive suradnje. Ako te nešto ovdje dotaknulo — javi se.",
-      },
-      caps: { "01":"Dizajn", "02":"Frontend inženjering", "03":"AI i automatizacija",
-              "04":"Kreativna tehnologija", "05":"Matematičko pripovijedanje", "06":"Dizajn igara" },
-      projects: {
-        "01": { role:"Dizajner sustava i animator",
-          desc:"Softverski cjevovod koji matematičke teme opisane običnim jezikom pretvara u potpuno renderirane edukativne animacije — bez ručnog pisanja ijedne linije animacijskog koda.",
-          problem:"Izrada matematičkih animacija zahtijeva i duboko poznavanje područja i vještinu programiranja animacija — kombinaciju koju malo tko ima.",
-          process:"Višestupanjska arhitektura zaključivanja koja analizira temu, planira scene i pokrete kamere, generira validirani Manim/Python kod i automatski renderira završni MP4. Istaknuto: Ripple Surface Visualization — 3D valna površina u stvarnom vremenu, renderirana WebGL-om i Three.js-om s orbitirajućom kamerom.",
-          impact:"Cjelovit animacijski cjevovod od običnog jezika do renderiranog videa. Bez imalo ručnog animiranja." },
-        "02": { role:"Redatelj i montažer",
-          desc:"Režija i montaža kratkih filmskih sadržaja s naglaskom na ritam, vizualni tempo i emocionalno pripovijedanje.",
-          problem:"Kreatori u usponu trebali su filmsku kvalitetu bez budžeta za pravi produkcijski studio.",
-          process:"Modularni sustav rada koji spaja pažljivo predplaniranje, promišljen ritam i dorađenu postprodukciju te se skalira od solo rada do tima.",
-          impact:"Sadržaj je dosegnuo više od 2 milijuna organskih pregleda, a tri su rada istaknule velike streaming platforme." },
-        "03": { role:"Matematički animator",
-          desc:"Animirane lekcije matematike koje jednadžbe, dokaze i koncepte objašnjavaju čistim vizualnim izvodima i čitljivim tempom.",
-          problem:"Studenti se muče s apstraktnom notacijom jer udžbenicima nedostaje vizualna intuicija o tome kako se jednadžbe transformiraju korak po korak.",
-          process:"Čist stil bijelog platna s tamnim tekstom, glatkim prijelazima između algebarskih koraka i tempom podešenim za razumijevanje, a ne brzinu.",
-          impact:"Dva su videa premašila 500 tisuća pregleda na akademskim platformama. Koriste se kao dopunski materijal na tri sveučilišna kolegija matematičke analize." },
-        "04": { role:"Pisac i urednik",
-          desc:"Dugi eseji i brend-narativi koji spajaju istraživačku dubinu s čitkom, ljudskom prozom.",
-          problem:"Stručne publikacije bile su ili preguste za širu publiku ili preplitke za profesionalce.",
-          process:"Slojevita struktura pisanja koja čitatelja prvo uvuče, a zatim isporučuje tehničku dubinu bez suvišnog žargona.",
-          impact:"Tri su eseja prešla 100 tisuća čitanja. Jedan je tekst citiran u sveučilišnom kurikulumu dizajna." },
-        "05": { role:"Dizajner proizvoda",
-          desc:"Dizajn digitalnih proizvoda koji djeluju neizbježno — gdje svaka interakcija, prijelaz i prazno stanje zaslužuju svoje mjesto.",
-          problem:"Mobilna aplikacija imala je snažnu pozadinsku tehnologiju, ali korisnici su odustajali tijekom onboardinga zbog zbunjujućih tokova.",
-          process:"Redizajniran onboarding i osnovni model interakcije uz postupno otkrivanje i taktilne mikrointerakcije.",
-          impact:"Dovršavanje onboardinga poraslo je 34 %, a 30-dnevno zadržavanje poboljšalo se 18 % nakon redizajna." },
-      },
-      facts: [
-        "Igram igrice od svoje <em>9.</em> godine — a s 14 sam već preuređivao svaki UI koji mi je izgledao pogrešno, počevši od potpisa na forumima.",
-        "Odrastao sam govoreći hrvatski kod kuće, njemački u školi i engleski na internetu. Tri jezika, <em>nula svijesti o naglasku</em>.",
-        "I danas igram — uglavnom <em>strategije i FPS</em>. Odande zapravo dolazi pola mojih instinkata za povratne informacije i tajming.",
-        "Tipkam brže kad zapnem na problemu nego kad znam odgovor — nešto u tom <em>pritisku</em> pokrene prste.",
-      ],
-    },
-  };
-
-  const socials = [
-    { label:"Email", href:"mailto:egy.m4ster@gmail.com", color:"#7dd3fc",
-      path:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/>' },
-    { label:"GitHub", href:"https://github.com/ematkovichh", color:"#c4b5fd",
-      path:'<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>' },
-  ];
-
   /* ──────────────────────────────────────────────────────────
      RENDER  (language-aware; setLang() re-renders everything)
   ────────────────────────────────────────────────────────── */
   const arrow = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>';
+
+  // Escape data interpolated into innerHTML templates. Facts and the
+  // data-i18n ui strings are intentionally raw HTML (<em>, <br>).
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
   // Canonical (English) capability names, as referenced by project.skills
   const capIdByEn = {};
@@ -758,21 +253,21 @@
       <div class="work-media col7" data-scroll="skills">
         <div class="halo"></div>
         <div class="media-frame">
-          <img src="${p.img}" alt="${p.title}" loading="lazy" decoding="async">
-          ${p.embed ? `<iframe src="${p.embed}" title="${p.title}" loading="lazy"></iframe>` : ""}
+          <img src="${esc(p.img)}" alt="${esc(p.title)}" loading="lazy" decoding="async">
+          ${p.embed ? `<iframe src="${esc(p.embed)}" title="${esc(p.title)}" loading="lazy"></iframe>` : ""}
         </div>
       </div>
       <div class="work-info col5">
-        <div class="work-role">${p.id} — ${t.role}</div>
-        <h3 class="work-title">${p.title}</h3>
-        <p class="work-desc">${t.desc}</p>
+        <div class="work-role">${p.id} — ${esc(t.role)}</div>
+        <h3 class="work-title">${esc(p.title)}</h3>
+        <p class="work-desc">${esc(t.desc)}</p>
         <div class="work-rows">
-          <div class="work-row"><div class="row-label">${tr.ui["row.problem"]}</div><div class="row-val">${t.problem}</div></div>
-          <div class="work-row"><div class="row-label">${tr.ui["row.process"]}</div><div class="row-val">${t.process}</div></div>
-          <div class="work-row"><div class="row-label">${tr.ui["row.impact"]}</div><div class="row-val accent">${t.impact}</div></div>
+          <div class="work-row"><div class="row-label">${esc(tr.ui["row.problem"])}</div><div class="row-val">${esc(t.problem)}</div></div>
+          <div class="work-row"><div class="row-label">${esc(tr.ui["row.process"])}</div><div class="row-val">${esc(t.process)}</div></div>
+          <div class="work-row"><div class="row-label">${esc(tr.ui["row.impact"])}</div><div class="row-val accent">${esc(t.impact)}</div></div>
         </div>
-        <div class="chips">${p.skills.map(s=>`<a class="chip" href="#skills" data-scroll="skills">${tr.caps[capIdByEn[s]] || s}</a>`).join("")}</div>
-        <a class="explore" href="#skills" data-scroll="skills">${tr.ui["ui.exploreSkills"]} ${arrow}</a>
+        <div class="chips">${p.skills.map(s=>`<a class="chip" href="#skills" data-scroll="skills">${esc(tr.caps[capIdByEn[s]] || s)}</a>`).join("")}</div>
+        <a class="explore" href="#skills" data-scroll="skills">${esc(tr.ui["ui.exploreSkills"])} ${arrow}</a>
       </div>
     </div>`;
     }).join("");
@@ -782,16 +277,16 @@
     const tr = I18N[lang];
     document.getElementById("caps").innerHTML = capabilities.map(c => `
     <div class="cap reveal" id="skill-${c.id}">
-      <div class="cap-head"><span class="cap-num">${c.id}</span><h3 class="cap-name">${tr.caps[c.id]}</h3></div>
-      <div class="cap-items">${c.items.map(i=>`<span class="cap-item">${i}</span>`).join("")}</div>
+      <div class="cap-head"><span class="cap-num">${c.id}</span><h3 class="cap-name">${esc(tr.caps[c.id])}</h3></div>
+      <div class="cap-items">${c.items.map(i=>`<span class="cap-item">${esc(i)}</span>`).join("")}</div>
     </div>`).join("");
   }
 
   function renderMenus(){
     const tr = I18N[lang];
-    document.getElementById("dd-work").innerHTML = projects.map(p=>`<a href="#project-${p.id}" data-scroll="project-${p.id}">${p.title}</a>`).join("");
-    document.getElementById("dd-skills").innerHTML = capabilities.map(c=>`<a href="#skill-${c.id}" data-scroll="skill-${c.id}">${tr.caps[c.id]}</a>`).join("");
-    document.getElementById("m-caps").innerHTML = capabilities.map(c=>`<a class="m-cap" href="#skill-${c.id}" data-scroll="skill-${c.id}" data-mobile>${tr.caps[c.id]}</a>`).join("");
+    document.getElementById("dd-work").innerHTML = projects.map(p=>`<a href="#project-${p.id}" data-scroll="project-${p.id}">${esc(p.title)}</a>`).join("");
+    document.getElementById("dd-skills").innerHTML = capabilities.map(c=>`<a href="#skill-${c.id}" data-scroll="skill-${c.id}">${esc(tr.caps[c.id])}</a>`).join("");
+    document.getElementById("m-caps").innerHTML = capabilities.map(c=>`<a class="m-cap" href="#skill-${c.id}" data-scroll="skill-${c.id}" data-mobile>${esc(tr.caps[c.id])}</a>`).join("");
   }
 
   function renderFacts(){
@@ -805,9 +300,9 @@
   function renderLangs(active){
     document.getElementById("lang-short").textContent = languages.find(l=>l.code===active).short;
     document.getElementById("dd-lang").innerHTML = languages.map(l=>
-      `<button data-lang="${l.code}">${l.label}${l.code===active?'<span class="lang-dot"></span>':''}</button>`).join("");
+      `<button data-lang="${l.code}">${esc(l.label)}${l.code===active?'<span class="lang-dot"></span>':''}</button>`).join("");
     document.getElementById("m-langs").innerHTML = languages.map(l=>
-      `<button class="m-lang ${l.code===active?'active':''}" data-lang="${l.code}"><span style="font-size:16px">${l.flag}</span><span>${l.label}</span></button>`).join("");
+      `<button class="m-lang ${l.code===active?'active':''}" data-lang="${l.code}"><span style="font-size:16px">${l.flag}</span><span>${esc(l.label)}</span></button>`).join("");
   }
 
   // Pause embed animation loops while their iframe is offscreen.
@@ -852,11 +347,11 @@
     renderAll(false);
   }
 
-  // Socials are language-independent; render once.
+  // Socials are language-independent; render once. (s.path is trusted SVG markup.)
   document.getElementById("socials").innerHTML = socials.map(s=>`
-    <a class="social" href="${s.href}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${s.label}">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:${s.color};filter:drop-shadow(0 0 6px ${s.color}99)">${s.path}</svg>
-      ${s.label}
+    <a class="social" href="${esc(s.href)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${esc(s.label)}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:${esc(s.color)};filter:drop-shadow(0 0 6px ${esc(s.color)}99)">${s.path}</svg>
+      ${esc(s.label)}
     </a>`).join("");
 
   renderAll(true);

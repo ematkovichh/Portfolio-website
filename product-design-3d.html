@@ -9,6 +9,7 @@
 </head>
 <body>
 <script src="vendor/three.min.js"></script>
+<script src="embed-base.js"></script>
 <script>
 /* ── 3D Product Design ────────────────────────────────────────────────────── */
 
@@ -301,16 +302,10 @@ window.addEventListener('resize', () => {
 
 /* ── Render loop ────────────────────────────────────────────────────────── */
 const clock = new THREE.Clock();
-let paused = false;
-window.addEventListener('message', e => {
-  if(e.data === 'pause') paused = true;
-  if(e.data === 'resume') paused = false;
-});
-const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function animate(){
   requestAnimationFrame(animate);
-  if(paused) return;
+  if(embedPaused) return;
   const t = clock.getElapsedTime();
 
   // Phone: float + gentle sway

@@ -25,6 +25,7 @@
 <canvas id="c"></canvas>
 <div id="eq">z = sin(√(x² + y²)) · e<sup style="font-size:10px">−0.18r</sup></div>
 <script src="vendor/three.min.js"></script>
+<script src="embed-base.js"></script>
 <script>
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
@@ -162,11 +163,10 @@ function updateSurface(time) {
 const ORBIT_R = Math.sqrt(14*14+22*22);
 let t = 0, angle = Math.atan2(22, 0);
 let rafId = null;
-let paused = false;
 
 function animate() {
   rafId = requestAnimationFrame(animate);
-  if (paused) return;
+  if (embedPaused) return;
   t += 0.018; angle += 0.003; frameCount++;
   const flat = Math.sqrt(ORBIT_R*ORBIT_R - 14*14);
   camera.position.x = Math.sin(angle) * flat;
@@ -177,15 +177,6 @@ function animate() {
   updateLines(lineGeo, t);
   renderer.render(scene, camera);
 }
-
-// Pause when scrolled out of view (communicated from parent via postMessage).
-// Tab-hidden pauses come for free: browsers stop rAF in background tabs.
-window.addEventListener('message', e => {
-  if (e.data === 'pause') paused = true;
-  if (e.data === 'resume') paused = false;
-});
-
-const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function renderStatic() {
   t = 2.4;

@@ -14,6 +14,7 @@
 </head>
 <body>
 <canvas id="c"></canvas>
+<script src="embed-base.js"></script>
 <script>
 /* ── Editorial Writing — typographic composition ──────────────────────────
    Layered prose fragments reveal themselves word by word.
@@ -141,13 +142,6 @@ function advance(dt){
     }
   }
 }
-
-let paused = false;
-window.addEventListener('message', e => {
-  if(e.data === 'pause') paused = true;
-  if(e.data === 'resume') paused = false;
-});
-const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ── Draw ────────────────────────────────────────────────────────────────── */
 function render(){
@@ -279,7 +273,7 @@ function render(){
 
 function frame(ts){
   requestAnimationFrame(frame);
-  if(paused) return;
+  if(embedPaused) return;
   const dt = Math.min(ts - lastTs, 60);
   lastTs = ts;
   advance(dt);

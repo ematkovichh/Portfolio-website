@@ -14,6 +14,7 @@
 </head>
 <body>
 <canvas id="c"></canvas>
+<script src="embed-base.js"></script>
 <script>
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
@@ -33,16 +34,10 @@ const TRACKS = [
 ];
 
 let t = 0;
-let paused = false;
-window.addEventListener('message', e => {
-  if(e.data === 'pause') paused = true;
-  if(e.data === 'resume') paused = false;
-});
-const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function draw(){
   if(!REDUCED) requestAnimationFrame(draw);
-  if(paused) return;
+  if(embedPaused) return;
   t += 0.0015;
   const ph = t % 1;
 
