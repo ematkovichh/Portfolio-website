@@ -3,12 +3,18 @@
  *
  * Hero title with a liquid magnifying-glass distortion effect.
  *
+ * Standalone React snippet — not used by the (framework-free) site itself,
+ * kept here as a reusable component.
+ *
  * How it works:
  *   Each character is wrapped in an inline-block <span> with a DOM ref.
- *   A requestAnimationFrame loop reads each character's viewport position,
- *   computes lens displacement + scale from cursor proximity, and drives those
- *   values through a critically-damped spring toward their target.
- *   Style writes bypass React re-renders entirely for 60fps on any hardware.
+ *   Character centres are measured once (in page coordinates) and cached;
+ *   only a resize invalidates the cache, so the rAF loop does zero layout
+ *   reads. A requestAnimationFrame loop computes lens displacement + scale
+ *   from cursor proximity and drives those values through a
+ *   critically-damped spring toward their target. The loop stops entirely
+ *   once the cursor leaves and every spring has settled.
+ *   Style writes bypass React re-renders for 60fps on any hardware.
  *
  * No external dependencies.
  *
@@ -30,6 +36,7 @@ const CURSOR_LERP  = 0.16;  // cursor smoothing factor — higher feels more dir
 const SPRING_K     = 260;   // spring stiffness — higher = snappier
 const SPRING_D     = 26;    // spring damping — near-critical at 2√260 ≈ 32
 const DT           = 1 / 60; // integration timestep (seconds)
+const REST_EPS     = 0.02;  // below this displacement/velocity a spring counts as settled
 /* ────────────────────────────────────────────────────────────────────────── */
 
 /** Advance a 1-D damped spring one timestep. Mutates `s`. */
@@ -86,12 +93,15 @@ const lensStyle = {
 /* ── Component ───────────────────────────────────────────────────────────── */
 export default function LiquidHeroTitle() {
   const rafRef     = useRef(null);
+  const runningRef = useRef(false);
   const rawCursor  = useRef({ x: -9999, y: -9999 });
   const smCursor   = useRef({ x: -9999, y: -9999 });
   const hovering   = useRef(false);
   const elRefs     = useRef([]);
+  const rectsRef   = useRef([]);   // cached char centres in PAGE coordinates
   const springs    = useRef(null);
   const lensRef    = useRef(null);
+  const startRef   = useRef(() => {});
 
   // Flatten all characters into a single indexed list
   const chars = LINES.flatMap((line, li) =>
@@ -108,6 +118,19 @@ export default function LiquidHeroTitle() {
   }
 
   useEffect(() => {
+    // Measure once in page coordinates: scrolling never invalidates the
+    // cache (viewport position is derived per frame), only resize does.
+    const computeRects = () => {
+      rectsRef.current = elRefs.current.map((el) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return {
+          px: r.left + r.width  * 0.5 + window.scrollX,
+          py: r.top  + r.height * 0.5 + window.scrollY,
+        };
+      });
+    };
+
     const loop = () => {
       // ── 1. Smooth cursor ─────────────────────────────────────────────────
       const raw = rawCursor.current;
@@ -123,14 +146,17 @@ export default function LiquidHeroTitle() {
       }
 
       // ── 3. Update each character ─────────────────────────────────────────
+      let anyActive = false;
+
       elRefs.current.forEach((el, i) => {
         if (!el) return;
-        const sp = springs.current[i];
+        const sp   = springs.current[i];
+        const rect = rectsRef.current[i];
+        if (!rect) return;
 
-        // Character centre in viewport coords
-        const rect = el.getBoundingClientRect();
-        const cx   = rect.left + rect.width  * 0.5;
-        const cy   = rect.top  + rect.height * 0.5;
+        // Cached page coords → current viewport coords
+        const cx = rect.px - window.scrollX;
+        const cy = rect.py - window.scrollY;
 
         // Vector from character toward cursor
         const dvx  = sm.x - cx;
@@ -139,7 +165,7 @@ export default function LiquidHeroTitle() {
 
         let tx = 0, ty = 0, ts = 1; // spring targets
 
-        if (dist > 0 && dist < LENS_RADIUS) {
+        if (hovering.current && dist > 0 && dist < LENS_RADIUS) {
           const t = dist / LENS_RADIUS; // 0 = centre, 1 = edge
 
           // Displacement falloff shape:
@@ -167,36 +193,65 @@ export default function LiquidHeroTitle() {
 
         // Skip DOM write if change is below perception threshold
         const dirty =
-          Math.abs(sp.x.x) > 0.02 ||
-          Math.abs(sp.y.x) > 0.02 ||
+          Math.abs(sp.x.x) > REST_EPS ||
+          Math.abs(sp.y.x) > REST_EPS ||
           Math.abs(sp.s.x - 1) > 0.001;
 
         if (dirty) {
+          anyActive = true;
           el.style.transform =
             `translate(${sp.x.x.toFixed(2)}px,${sp.y.x.toFixed(2)}px)` +
             ` scale(${sp.s.x.toFixed(4)})`;
         } else if (el.style.transform) {
           el.style.transform = "";
         }
+
+        if (
+          Math.abs(sp.x.v) > REST_EPS ||
+          Math.abs(sp.y.v) > REST_EPS ||
+          Math.abs(sp.s.v) > 0.001
+        ) {
+          anyActive = true;
+        }
       });
+
+      // ── 4. Idle stop: nothing moving, cursor gone → park the loop ────────
+      if (!hovering.current && !anyActive) {
+        runningRef.current = false;
+        return;
+      }
 
       rafRef.current = requestAnimationFrame(loop);
     };
 
-    rafRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(rafRef.current);
+    const start = () => {
+      if (!runningRef.current) {
+        runningRef.current = true;
+        rafRef.current = requestAnimationFrame(loop);
+      }
+    };
+    startRef.current = start;
+
+    computeRects();
+    window.addEventListener("resize", computeRects);
+
+    return () => {
+      window.removeEventListener("resize", computeRects);
+      cancelAnimationFrame(rafRef.current);
+      runningRef.current = false;
+    };
   }, []); // stable — reads everything through refs
 
   const onMove = useCallback((e) => {
     rawCursor.current = { x: e.clientX, y: e.clientY };
     hovering.current  = true;
+    startRef.current(); // wake the loop if it was parked
   }, []);
 
   const onLeave = useCallback(() => {
-    // Reset cursor instantly so the springs settle back to rest naturally
-    rawCursor.current = { x: -9999, y: -9999 };
-    smCursor.current  = { x: -9999, y: -9999 };
-    hovering.current  = false;
+    // Keep the smoothed cursor where it is; springs relax to rest and the
+    // loop parks itself once everything has settled.
+    hovering.current = false;
   }, []);
 
   // Mutable counter for flattened char index across lines
