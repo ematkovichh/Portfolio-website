@@ -328,23 +328,23 @@
     <div class="nav-bg"></div>
     <button class="brand" data-scroll="top">ematkovic.com</button>
     <div class="nav-links">
-      <button class="nav-link" data-scroll="about">About</button>
+      <button class="nav-link" data-scroll="about" data-i18n="nav.about">About</button>
 
       <div class="has-dd" data-dd="work">
         <button class="nav-link" data-scroll="work" data-dd-toggle>
-          Work <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          <span data-i18n="nav.work">Work</span> <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="dd dd-work" id="dd-work"></div>
       </div>
 
       <div class="has-dd" data-dd="skills">
         <button class="nav-link" data-scroll="skills" data-dd-toggle>
-          Skills <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          <span data-i18n="nav.skills">Skills</span> <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="dd dd-skills" id="dd-skills"></div>
       </div>
 
-      <button class="nav-link" data-scroll="contact">Hi!</button>
+      <button class="nav-link" data-scroll="contact" data-i18n="nav.hi">Hi!</button>
 
       <div class="has-dd" data-dd="lang">
         <button class="nav-link" data-dd-toggle aria-label="Change language">
@@ -366,16 +366,16 @@
   <div id="m-menu">
     <div class="m-head"><span class="brand">ematkovic.com</span></div>
     <nav class="m-nav">
-      <button class="m-link" data-scroll="about" data-mobile>About</button>
-      <button class="m-link" data-scroll="work" data-mobile>Work</button>
-      <button class="m-link" data-scroll="skills" data-mobile>Skills</button>
-      <button class="m-link" data-scroll="contact" data-mobile>Hi!</button>
+      <button class="m-link" data-scroll="about" data-mobile data-i18n="nav.about">About</button>
+      <button class="m-link" data-scroll="work" data-mobile data-i18n="nav.work">Work</button>
+      <button class="m-link" data-scroll="skills" data-mobile data-i18n="nav.skills">Skills</button>
+      <button class="m-link" data-scroll="contact" data-mobile data-i18n="nav.hi">Hi!</button>
       <div style="margin-top:8px;padding-left:4px">
-        <span class="m-sub-title">Capabilities</span>
+        <span class="m-sub-title" data-i18n="ui.capabilities">Capabilities</span>
         <div id="m-caps" style="display:flex;flex-direction:column;gap:12px"></div>
       </div>
       <div style="margin-top:16px">
-        <span class="m-sub-title">Language</span>
+        <span class="m-sub-title" data-i18n="ui.language">Language</span>
         <div class="m-langs" id="m-langs"></div>
       </div>
     </nav>
@@ -384,7 +384,7 @@
   <!-- scroll to top -->
   <button id="to-top" aria-label="Scroll to top" data-scroll="top">
     <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></span>
-    <span>Top</span>
+    <span data-i18n="ui.top">Top</span>
   </button>
 
   <main>
@@ -415,10 +415,10 @@
         <h1 class="name" id="hero-name"><span class="nl">Eugen</span><span class="nl">Matković</span></h1>
         <div class="hero-role">
           <div class="rule"></div>
-          <p>Design Engineer</p>
+          <p data-i18n="ui.role">Design Engineer</p>
         </div>
         <button class="scroll-pill" data-scroll="about" aria-label="Scroll to explore">
-          <span>Scroll to explore</span>
+          <span data-i18n="ui.scrollExplore">Scroll to explore</span>
           <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
         </button>
       </div>
@@ -427,42 +427,42 @@
     <!-- ABOUT -->
     <section id="about" class="sec-pad">
       <div class="grid12">
-        <div class="reveal" style="grid-column:span 4;padding-top:4px"><div class="label">(01) The Ethos</div></div>
+        <div class="reveal" style="grid-column:span 4;padding-top:4px"><div class="label" data-i18n="labels.ethos">(01) The Ethos</div></div>
         <div class="stack" style="grid-column:span 8">
-          <h2 class="about-h reveal">Anyone can ship a screen that looks right. I ship interfaces that prove it. Measured in outcomes, not impressions.</h2>
+          <h2 class="about-h reveal" data-i18n="about.h">Anyone can ship a screen that looks right. I ship interfaces that prove it. Measured in outcomes, not impressions.</h2>
           <div class="about-body reveal">
-            <p>I'm Eugen Matković, a design engineer based in Berlin. I work at the intersection of visual craft and engineering rigour, building interfaces where nothing is wasted and every detail earns its place.</p>
-            <p>Fluent in English, German, and Croatian, I bring a cross-cultural sensibility to projects spanning design systems, creative technology, and intelligent automation.</p>
+            <p data-i18n="about.p1">I'm Eugen Matković, a design engineer based in Berlin. I work at the intersection of visual craft and engineering rigour, building interfaces where nothing is wasted and every detail earns its place.</p>
+            <p data-i18n="about.p2">Fluent in English, German, and Croatian, I bring a cross-cultural sensibility to projects spanning design systems, creative technology, and intelligent automation.</p>
           </div>
           <div class="about-meta reveal">
-            <div><div class="meta-label">Languages</div><div class="meta-val">English · German · Croatian</div></div>
-            <div><div class="meta-label">Based in</div><div class="meta-val">Berlin</div></div>
-            <div><div class="meta-label">Available for</div><div class="meta-val">Freelance · Full-time</div></div>
+            <div><div class="meta-label" data-i18n="meta.langsLabel">Languages</div><div class="meta-val" data-i18n="meta.langsVal">English · German · Croatian</div></div>
+            <div><div class="meta-label" data-i18n="meta.basedLabel">Based in</div><div class="meta-val" data-i18n="meta.basedVal">Berlin</div></div>
+            <div><div class="meta-label" data-i18n="meta.availLabel">Available for</div><div class="meta-val" data-i18n="meta.availVal">Freelance · Full-time</div></div>
           </div>
         </div>
       </div>
       <button class="sec-arrow" data-scroll="work" aria-label="Scroll to Work">
-        <span>Work</span>
+        <span data-i18n="ui.arrowWork">Work</span>
         <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
       </button>
     </section>
 
     <!-- WORK -->
     <section id="work" class="sec-pad">
-      <div class="reveal" style="margin-bottom:80px"><div class="label">(02) Selected Works</div></div>
+      <div class="reveal" style="margin-bottom:80px"><div class="label" data-i18n="labels.works">(02) Selected Works</div></div>
       <div class="works" id="works"></div>
       <button class="sec-arrow" data-scroll="skills" aria-label="Scroll to Skills">
-        <span>Skills</span>
+        <span data-i18n="ui.arrowSkills">Skills</span>
         <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
       </button>
     </section>
 
     <!-- SKILLS -->
     <section id="skills" class="sec-pad border-t-soft mt-divider">
-      <div class="reveal" style="margin-bottom:64px"><div class="label">(03) Capabilities</div></div>
+      <div class="reveal" style="margin-bottom:64px"><div class="label" data-i18n="labels.caps">(03) Capabilities</div></div>
       <div class="caps" id="caps"></div>
       <button class="sec-arrow" data-scroll="contact" aria-label="Scroll to other">
-        <span>Other</span>
+        <span data-i18n="ui.arrowOther">Other</span>
         <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
       </button>
     </section>
@@ -470,10 +470,10 @@
     <!-- CONTACT -->
     <section id="contact" class="border-t-soft mt-divider">
       <div class="grid12">
-        <div class="reveal" style="grid-column:span 4"><div class="label">(04) Hi!</div></div>
+        <div class="reveal" style="grid-column:span 4"><div class="label" data-i18n="labels.hi">(04) Hi!</div></div>
         <div style="grid-column:span 8">
-          <h2 class="contact-h reveal">Let's build something<br>uncompromising.</h2>
-          <p class="reveal" style="font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;max-width:36rem;margin-bottom:48px;">
+          <h2 class="contact-h reveal" data-i18n="contact.h">Let's build something<br>uncompromising.</h2>
+          <p class="reveal" data-i18n="contact.p" style="font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;max-width:36rem;margin-bottom:48px;">
             Open to freelance projects, full-time roles, and interesting collaborations. If something here resonated — reach out.
           </p>
           <div class="socials reveal" id="socials"></div>
@@ -483,7 +483,7 @@
 
     <!-- FUN FOOTER -->
     <section id="fun" class="border-t-soft mt-divider" style="padding-bottom:128px">
-      <div class="reveal" style="margin-bottom:64px"><div class="label">(05) Random Facts</div></div>
+      <div class="reveal" style="margin-bottom:64px"><div class="label" data-i18n="labels.facts">(05) Random Facts</div></div>
       <div id="facts-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden"></div>
       <div style="margin-top:80px;display:flex;align-items:center;gap:24px" class="reveal">
         <div style="height:1px;flex:1;background:rgba(255,255,255,.07)"></div>
@@ -498,55 +498,25 @@
      DATA  (edit these arrays to change your content)
   ────────────────────────────────────────────────────────── */
   const projects = [
-    { id:"01", title:"Math-To-Manim",
-      desc:"A software pipeline that transforms plain-English math topics into fully rendered educational animations — without writing a single line of animation code manually.",
-      img:"images/project-math-story.webp", embed:"ripple-surface.html",
-      role:"Systems Designer & Animator",
-      problem:"Creating mathematical animations requires both deep domain knowledge and animation programming expertise — a combination few people have.",
-      process:"Built a multi-stage reasoning architecture that analyzes a topic, plans scenes and camera movements, generates validated Manim/Python code, and renders the final MP4 automatically. Featured: Ripple Surface Visualization — a real-time 3D wave surface, rendered with WebGL and Three.js with an orbiting camera.",
-      impact:"End-to-end animation pipeline from plain English to rendered video. Zero manual animation work required.",
+    { id:"01", title:"Math-To-Manim", img:"images/project-math-story.webp", embed:"ripple-surface.html",
       skills:["Mathematical Storytelling","Creative Technology"] },
-    { id:"02", title:"Cinematic Content",
-      desc:"Directing and editing short-form cinematic content with a focus on pacing, visual rhythm, and emotional storytelling.",
-      img:"images/project-video.webp", embed:"cinematic-content.html",
-      role:"Director & Editor",
-      problem:"Emerging creators needed cinematic quality without the budget for a full production studio.",
-      process:"Developed a modular workflow system combining careful pre-planning, deliberate pacing, and refined post-production that scales from solo to team.",
-      impact:"Content reached 2M+ organic views and three pieces were featured by major streaming platforms.",
+    { id:"02", title:"Cinematic Content", img:"images/project-video.webp", embed:"cinematic-content.html",
       skills:["Design","Creative Technology"] },
-    { id:"03", title:"Math Education Videos",
-      desc:"Creating animated math lessons that explain equations, proofs, and concepts through clean visual derivations with readable pacing.",
-      img:"images/project-math-lesson.webp", embed:"math-viz.html",
-      role:"Mathematical Animator",
-      problem:"Math students struggle with abstract notation because textbooks lack visual intuition for how equations transform step by step.",
-      process:"Designed a clean white-canvas style with dark text, smooth transitions between each algebraic step, and pacing tuned for comprehension over speed.",
-      impact:"Two videos surpassed 500K views on academic platforms. Used as supplementary material in three university calculus courses.",
+    { id:"03", title:"Math Education Videos", img:"images/project-math-lesson.webp", embed:"math-viz.html",
       skills:["Mathematical Storytelling","Frontend Engineering"] },
-    { id:"04", title:"Editorial Writing",
-      desc:"Writing long-form essays and brand narratives that combine research depth with readable, human prose.",
-      img:"images/project-writing.webp", embed:"editorial-writing.html",
-      role:"Writer & Editor",
-      problem:"Technical publications were either too dense for general readers or too shallow for professionals.",
-      process:"Developed a layered writing structure that hooks the reader first, then delivers technical depth without jargon bloat.",
-      impact:"Three essays crossed 100K+ reads. One piece was cited in a university design curriculum.",
+    { id:"04", title:"Editorial Writing", img:"images/project-writing.webp", embed:"editorial-writing.html",
       skills:["Design","Creative Technology"] },
-    { id:"05", title:"Product Design",
-      desc:"Designing digital products that feel inevitable — where every interaction, transition, and empty state earns its place.",
-      img:"images/project-product.webp", embed:"product-design-3d.html",
-      role:"Product Designer",
-      problem:"A mobile app had strong backend technology but users abandoned during onboarding due to confusing flows.",
-      process:"Redesigned the onboarding and core interaction model using progressive disclosure and tactile micro-interactions.",
-      impact:"Onboarding completion increased 34% and 30-day retention improved by 18% after the redesign.",
+    { id:"05", title:"Product Design", img:"images/project-product.webp", embed:"product-design-3d.html",
       skills:["Design","Frontend Engineering"] },
   ];
 
   const capabilities = [
-    { id:"01", label:"Design", items:["UI/UX Design","Design Systems","Visual Identity"] },
-    { id:"02", label:"Frontend Engineering", items:["React","TypeScript","Performance Optimization"] },
-    { id:"03", label:"AI & Automation", items:["AI Workflows","Prompt Engineering","Automation Systems"] },
-    { id:"04", label:"Creative Technology", items:["Motion Design","Creative Coding","Interactive Experiences"] },
-    { id:"05", label:"Mathematical Storytelling", items:["Manim","NumPy","Python","Procedural Animation","Mathematical Visualization"] },
-    { id:"06", label:"Game Design", items:["Systems Design","UX for Games","Prototyping"] },
+    { id:"01", items:["UI/UX Design","Design Systems","Visual Identity"] },
+    { id:"02", items:["React","TypeScript","Performance Optimization"] },
+    { id:"03", items:["AI Workflows","Prompt Engineering","Automation Systems"] },
+    { id:"04", items:["Motion Design","Creative Coding","Interactive Experiences"] },
+    { id:"05", items:["Manim","NumPy","Python","Procedural Animation","Mathematical Visualization"] },
+    { id:"06", items:["Systems Design","UX for Games","Prototyping"] },
   ];
 
   const languages = [
@@ -555,6 +525,175 @@
     { code:"hr", label:"Hrvatski", short:"HR", flag:"🇭🇷" },
   ];
 
+  /* All user-facing text lives here, one dict per language. */
+  const I18N = {
+    en: {
+      ui: {
+        "nav.about":"About", "nav.work":"Work", "nav.skills":"Skills", "nav.hi":"Hi!",
+        "ui.capabilities":"Capabilities", "ui.language":"Language", "ui.top":"Top",
+        "ui.scrollExplore":"Scroll to explore", "ui.role":"Design Engineer",
+        "ui.arrowWork":"Work", "ui.arrowSkills":"Skills", "ui.arrowOther":"Other",
+        "labels.ethos":"(01) The Ethos", "labels.works":"(02) Selected Works",
+        "labels.caps":"(03) Capabilities", "labels.hi":"(04) Hi!", "labels.facts":"(05) Random Facts",
+        "about.h":"Anyone can ship a screen that looks right. I ship interfaces that prove it. Measured in outcomes, not impressions.",
+        "about.p1":"I'm Eugen Matković, a design engineer based in Berlin. I work at the intersection of visual craft and engineering rigour, building interfaces where nothing is wasted and every detail earns its place.",
+        "about.p2":"Fluent in English, German, and Croatian, I bring a cross-cultural sensibility to projects spanning design systems, creative technology, and intelligent automation.",
+        "meta.langsLabel":"Languages", "meta.langsVal":"English · German · Croatian",
+        "meta.basedLabel":"Based in", "meta.basedVal":"Berlin",
+        "meta.availLabel":"Available for", "meta.availVal":"Freelance · Full-time",
+        "row.problem":"Problem", "row.process":"Process", "row.impact":"Impact",
+        "ui.exploreSkills":"Explore Skills",
+        "contact.h":"Let's build something<br>uncompromising.",
+        "contact.p":"Open to freelance projects, full-time roles, and interesting collaborations. If something here resonated — reach out.",
+      },
+      caps: { "01":"Design", "02":"Frontend Engineering", "03":"AI & Automation",
+              "04":"Creative Technology", "05":"Mathematical Storytelling", "06":"Game Design" },
+      projects: {
+        "01": { role:"Systems Designer & Animator",
+          desc:"A software pipeline that transforms plain-English math topics into fully rendered educational animations — without writing a single line of animation code manually.",
+          problem:"Creating mathematical animations requires both deep domain knowledge and animation programming expertise — a combination few people have.",
+          process:"Built a multi-stage reasoning architecture that analyzes a topic, plans scenes and camera movements, generates validated Manim/Python code, and renders the final MP4 automatically. Featured: Ripple Surface Visualization — a real-time 3D wave surface, rendered with WebGL and Three.js with an orbiting camera.",
+          impact:"End-to-end animation pipeline from plain English to rendered video. Zero manual animation work required." },
+        "02": { role:"Director & Editor",
+          desc:"Directing and editing short-form cinematic content with a focus on pacing, visual rhythm, and emotional storytelling.",
+          problem:"Emerging creators needed cinematic quality without the budget for a full production studio.",
+          process:"Developed a modular workflow system combining careful pre-planning, deliberate pacing, and refined post-production that scales from solo to team.",
+          impact:"Content reached 2M+ organic views and three pieces were featured by major streaming platforms." },
+        "03": { role:"Mathematical Animator",
+          desc:"Creating animated math lessons that explain equations, proofs, and concepts through clean visual derivations with readable pacing.",
+          problem:"Math students struggle with abstract notation because textbooks lack visual intuition for how equations transform step by step.",
+          process:"Designed a clean white-canvas style with dark text, smooth transitions between each algebraic step, and pacing tuned for comprehension over speed.",
+          impact:"Two videos surpassed 500K views on academic platforms. Used as supplementary material in three university calculus courses." },
+        "04": { role:"Writer & Editor",
+          desc:"Writing long-form essays and brand narratives that combine research depth with readable, human prose.",
+          problem:"Technical publications were either too dense for general readers or too shallow for professionals.",
+          process:"Developed a layered writing structure that hooks the reader first, then delivers technical depth without jargon bloat.",
+          impact:"Three essays crossed 100K+ reads. One piece was cited in a university design curriculum." },
+        "05": { role:"Product Designer",
+          desc:"Designing digital products that feel inevitable — where every interaction, transition, and empty state earns its place.",
+          problem:"A mobile app had strong backend technology but users abandoned during onboarding due to confusing flows.",
+          process:"Redesigned the onboarding and core interaction model using progressive disclosure and tactile micro-interactions.",
+          impact:"Onboarding completion increased 34% and 30-day retention improved by 18% after the redesign." },
+      },
+      facts: [
+        "I've been gaming since I was <em>9</em> — and by 14 I was already redesigning every UI I thought looked wrong, starting with forum signatures.",
+        "I grew up speaking Croatian at home, German at school, and English on the internet. Three languages, <em>zero accent awareness</em>.",
+        "I still play games to this day — mostly <em>strategy and FPS</em>. It's where half my instincts about feedback and timing actually come from.",
+        "I type faster when I'm stuck on a problem than when I know the answer — something about the <em>pressure</em> makes the fingers go.",
+      ],
+    },
+    de: {
+      ui: {
+        "nav.about":"Über mich", "nav.work":"Projekte", "nav.skills":"Skills", "nav.hi":"Hallo!",
+        "ui.capabilities":"Kompetenzen", "ui.language":"Sprache", "ui.top":"Nach oben",
+        "ui.scrollExplore":"Scrollen zum Entdecken", "ui.role":"Design Engineer",
+        "ui.arrowWork":"Projekte", "ui.arrowSkills":"Kompetenzen", "ui.arrowOther":"Weiteres",
+        "labels.ethos":"(01) Das Ethos", "labels.works":"(02) Ausgewählte Arbeiten",
+        "labels.caps":"(03) Kompetenzen", "labels.hi":"(04) Hallo!", "labels.facts":"(05) Zufällige Fakten",
+        "about.h":"Jeder kann einen Screen bauen, der richtig aussieht. Ich baue Interfaces, die es beweisen. Gemessen an Ergebnissen, nicht an Eindrücken.",
+        "about.p1":"Ich bin Eugen Matković, Design Engineer aus Berlin. Ich arbeite an der Schnittstelle von visuellem Handwerk und technischer Präzision und baue Interfaces, in denen nichts verschwendet wird und jedes Detail seinen Platz verdient.",
+        "about.p2":"Fließend in Englisch, Deutsch und Kroatisch bringe ich ein interkulturelles Gespür in Projekte ein — von Designsystemen über Creative Technology bis zu intelligenter Automatisierung.",
+        "meta.langsLabel":"Sprachen", "meta.langsVal":"Englisch · Deutsch · Kroatisch",
+        "meta.basedLabel":"Standort", "meta.basedVal":"Berlin",
+        "meta.availLabel":"Verfügbar für", "meta.availVal":"Freelance · Festanstellung",
+        "row.problem":"Problem", "row.process":"Prozess", "row.impact":"Wirkung",
+        "ui.exploreSkills":"Kompetenzen entdecken",
+        "contact.h":"Lass uns etwas<br>Kompromissloses bauen.",
+        "contact.p":"Offen für Freelance-Projekte, Festanstellungen und spannende Kollaborationen. Wenn dich hier etwas angesprochen hat — melde dich.",
+      },
+      caps: { "01":"Design", "02":"Frontend-Entwicklung", "03":"KI & Automatisierung",
+              "04":"Creative Technology", "05":"Mathematisches Storytelling", "06":"Game Design" },
+      projects: {
+        "01": { role:"Systemdesigner & Animator",
+          desc:"Eine Software-Pipeline, die mathematische Themen in einfacher Sprache in fertig gerenderte Lernanimationen verwandelt — ohne eine einzige Zeile Animationscode von Hand zu schreiben.",
+          problem:"Mathematische Animationen erfordern tiefes Fachwissen und Erfahrung in Animationsprogrammierung — eine Kombination, die nur wenige mitbringen.",
+          process:"Mehrstufige Reasoning-Architektur, die ein Thema analysiert, Szenen und Kamerafahrten plant, validierten Manim/Python-Code generiert und das fertige MP4 automatisch rendert. Featured: Ripple Surface Visualization — eine 3D-Wellenoberfläche in Echtzeit, gerendert mit WebGL und Three.js mit orbitierender Kamera.",
+          impact:"End-to-End-Animationspipeline von einfacher Sprache zum fertigen Video. Null manuelle Animationsarbeit nötig." },
+        "02": { role:"Regie & Schnitt",
+          desc:"Regie und Schnitt für filmische Kurzformate mit Fokus auf Pacing, visuellem Rhythmus und emotionalem Storytelling.",
+          problem:"Aufstrebende Creator brauchten filmische Qualität ohne das Budget für ein komplettes Produktionsstudio.",
+          process:"Modulares Workflow-System aus sorgfältiger Vorplanung, bewusstem Pacing und präziser Postproduktion, das von Solo bis Team skaliert.",
+          impact:"Inhalte erreichten über 2 Mio. organische Views; drei Arbeiten wurden von großen Streaming-Plattformen featured." },
+        "03": { role:"Mathematischer Animator",
+          desc:"Animierte Mathe-Lektionen, die Gleichungen, Beweise und Konzepte durch klare visuelle Herleitungen in lesbarem Tempo erklären.",
+          problem:"Studierende kämpfen mit abstrakter Notation, weil Lehrbüchern die visuelle Intuition dafür fehlt, wie sich Gleichungen Schritt für Schritt umformen.",
+          process:"Klarer White-Canvas-Stil mit dunkler Schrift, weichen Übergängen zwischen den algebraischen Schritten und einem Tempo, das Verständnis über Geschwindigkeit stellt.",
+          impact:"Zwei Videos überschritten 500.000 Views auf akademischen Plattformen. Eingesetzt als Zusatzmaterial in drei Analysis-Kursen an Universitäten." },
+        "04": { role:"Autor & Redakteur",
+          desc:"Langform-Essays und Markennarrative, die Recherchetiefe mit lesbarer, menschlicher Prosa verbinden.",
+          problem:"Fachpublikationen waren entweder zu dicht für ein breites Publikum oder zu oberflächlich für Profis.",
+          process:"Mehrschichtige Textstruktur, die Lesende zuerst packt und dann technische Tiefe ohne Jargon liefert.",
+          impact:"Drei Essays überschritten 100.000 Reads. Ein Text wurde in einem universitären Design-Curriculum zitiert." },
+        "05": { role:"Produktdesigner",
+          desc:"Digitale Produkte, die sich zwangsläufig richtig anfühlen — jede Interaktion, jeder Übergang und jeder Empty State verdient seinen Platz.",
+          problem:"Eine Mobile-App hatte starke Backend-Technologie, aber Nutzer sprangen im Onboarding wegen verwirrender Flows ab.",
+          process:"Onboarding und Kern-Interaktionsmodell mit Progressive Disclosure und taktilen Mikrointeraktionen neu gestaltet.",
+          impact:"Onboarding-Abschlüsse stiegen um 34 %, die 30-Tage-Retention verbesserte sich nach dem Redesign um 18 %." },
+      },
+      facts: [
+        "Ich game seit ich <em>9</em> bin — und mit 14 habe ich schon jedes UI umgestaltet, das ich falsch fand, angefangen bei Forensignaturen.",
+        "Aufgewachsen mit Kroatisch zu Hause, Deutsch in der Schule und Englisch im Internet. Drei Sprachen, <em>null Bewusstsein für Akzente</em>.",
+        "Ich spiele bis heute — vor allem <em>Strategie und FPS</em>. Daher kommt die Hälfte meiner Instinkte für Feedback und Timing.",
+        "Ich tippe schneller, wenn ich an einem Problem festhänge, als wenn ich die Antwort kenne — irgendwas am <em>Druck</em> bringt die Finger in Gang.",
+      ],
+    },
+    hr: {
+      ui: {
+        "nav.about":"O meni", "nav.work":"Radovi", "nav.skills":"Vještine", "nav.hi":"Bok!",
+        "ui.capabilities":"Vještine", "ui.language":"Jezik", "ui.top":"Vrh",
+        "ui.scrollExplore":"Skrolaj i istraži", "ui.role":"Design Engineer",
+        "ui.arrowWork":"Radovi", "ui.arrowSkills":"Vještine", "ui.arrowOther":"Ostalo",
+        "labels.ethos":"(01) Etos", "labels.works":"(02) Odabrani radovi",
+        "labels.caps":"(03) Vještine", "labels.hi":"(04) Bok!", "labels.facts":"(05) Nasumične činjenice",
+        "about.h":"Svatko može isporučiti ekran koji izgleda dobro. Ja isporučujem sučelja koja to dokazuju. Mjereno rezultatima, a ne dojmovima.",
+        "about.p1":"Ja sam Eugen Matković, design engineer iz Berlina. Radim na sjecištu vizualnog zanata i inženjerske discipline, gradeći sučelja u kojima ništa nije suvišno i svaki detalj zaslužuje svoje mjesto.",
+        "about.p2":"Tečno govorim engleski, njemački i hrvatski te unosim međukulturni senzibilitet u projekte koji obuhvaćaju dizajn-sustave, kreativnu tehnologiju i inteligentnu automatizaciju.",
+        "meta.langsLabel":"Jezici", "meta.langsVal":"Engleski · Njemački · Hrvatski",
+        "meta.basedLabel":"Lokacija", "meta.basedVal":"Berlin",
+        "meta.availLabel":"Dostupan za", "meta.availVal":"Freelance · Puno radno vrijeme",
+        "row.problem":"Problem", "row.process":"Proces", "row.impact":"Učinak",
+        "ui.exploreSkills":"Istraži vještine",
+        "contact.h":"Izgradimo nešto<br>beskompromisno.",
+        "contact.p":"Otvoren za freelance projekte, stalne pozicije i zanimljive suradnje. Ako te nešto ovdje dotaknulo — javi se.",
+      },
+      caps: { "01":"Dizajn", "02":"Frontend inženjering", "03":"AI i automatizacija",
+              "04":"Kreativna tehnologija", "05":"Matematičko pripovijedanje", "06":"Dizajn igara" },
+      projects: {
+        "01": { role:"Dizajner sustava i animator",
+          desc:"Softverski cjevovod koji matematičke teme opisane običnim jezikom pretvara u potpuno renderirane edukativne animacije — bez ručnog pisanja ijedne linije animacijskog koda.",
+          problem:"Izrada matematičkih animacija zahtijeva i duboko poznavanje područja i vještinu programiranja animacija — kombinaciju koju malo tko ima.",
+          process:"Višestupanjska arhitektura zaključivanja koja analizira temu, planira scene i pokrete kamere, generira validirani Manim/Python kod i automatski renderira završni MP4. Istaknuto: Ripple Surface Visualization — 3D valna površina u stvarnom vremenu, renderirana WebGL-om i Three.js-om s orbitirajućom kamerom.",
+          impact:"Cjelovit animacijski cjevovod od običnog jezika do renderiranog videa. Bez imalo ručnog animiranja." },
+        "02": { role:"Redatelj i montažer",
+          desc:"Režija i montaža kratkih filmskih sadržaja s naglaskom na ritam, vizualni tempo i emocionalno pripovijedanje.",
+          problem:"Kreatori u usponu trebali su filmsku kvalitetu bez budžeta za pravi produkcijski studio.",
+          process:"Modularni sustav rada koji spaja pažljivo predplaniranje, promišljen ritam i dorađenu postprodukciju te se skalira od solo rada do tima.",
+          impact:"Sadržaj je dosegnuo više od 2 milijuna organskih pregleda, a tri su rada istaknule velike streaming platforme." },
+        "03": { role:"Matematički animator",
+          desc:"Animirane lekcije matematike koje jednadžbe, dokaze i koncepte objašnjavaju čistim vizualnim izvodima i čitljivim tempom.",
+          problem:"Studenti se muče s apstraktnom notacijom jer udžbenicima nedostaje vizualna intuicija o tome kako se jednadžbe transformiraju korak po korak.",
+          process:"Čist stil bijelog platna s tamnim tekstom, glatkim prijelazima između algebarskih koraka i tempom podešenim za razumijevanje, a ne brzinu.",
+          impact:"Dva su videa premašila 500 tisuća pregleda na akademskim platformama. Koriste se kao dopunski materijal na tri sveučilišna kolegija matematičke analize." },
+        "04": { role:"Pisac i urednik",
+          desc:"Dugi eseji i brend-narativi koji spajaju istraživačku dubinu s čitkom, ljudskom prozom.",
+          problem:"Stručne publikacije bile su ili preguste za širu publiku ili preplitke za profesionalce.",
+          process:"Slojevita struktura pisanja koja čitatelja prvo uvuče, a zatim isporučuje tehničku dubinu bez suvišnog žargona.",
+          impact:"Tri su eseja prešla 100 tisuća čitanja. Jedan je tekst citiran u sveučilišnom kurikulumu dizajna." },
+        "05": { role:"Dizajner proizvoda",
+          desc:"Dizajn digitalnih proizvoda koji djeluju neizbježno — gdje svaka interakcija, prijelaz i prazno stanje zaslužuju svoje mjesto.",
+          problem:"Mobilna aplikacija imala je snažnu pozadinsku tehnologiju, ali korisnici su odustajali tijekom onboardinga zbog zbunjujućih tokova.",
+          process:"Redizajniran onboarding i osnovni model interakcije uz postupno otkrivanje i taktilne mikrointerakcije.",
+          impact:"Dovršavanje onboardinga poraslo je 34 %, a 30-dnevno zadržavanje poboljšalo se 18 % nakon redizajna." },
+      },
+      facts: [
+        "Igram igrice od svoje <em>9.</em> godine — a s 14 sam već preuređivao svaki UI koji mi je izgledao pogrešno, počevši od potpisa na forumima.",
+        "Odrastao sam govoreći hrvatski kod kuće, njemački u školi i engleski na internetu. Tri jezika, <em>nula svijesti o naglasku</em>.",
+        "I danas igram — uglavnom <em>strategije i FPS</em>. Odande zapravo dolazi pola mojih instinkata za povratne informacije i tajming.",
+        "Tipkam brže kad zapnem na problemu nego kad znam odgovor — nešto u tom <em>pritisku</em> pokrene prste.",
+      ],
+    },
+  };
+
   const socials = [
     { label:"Email", href:"mailto:egy.m4ster@gmail.com", color:"#7dd3fc",
       path:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/>' },
@@ -562,20 +701,31 @@
       path:'<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>' },
   ];
 
-  const facts = [
-    { n:"01", text:"I've been gaming since I was <em>9</em> — and by 14 I was already redesigning every UI I thought looked wrong, starting with forum signatures." },
-    { n:"02", text:"I grew up speaking Croatian at home, German at school, and English on the internet. Three languages, <em>zero accent awareness</em>." },
-    { n:"03", text:"I still play games to this day — mostly <em>strategy and FPS</em>. It's where half my instincts about feedback and timing actually come from." },
-    { n:"04", text:"I type faster when I'm stuck on a problem than when I know the answer — something about the <em>pressure</em> makes the fingers go." },
-  ];
-
   /* ──────────────────────────────────────────────────────────
-     RENDER
+     RENDER  (language-aware; setLang() re-renders everything)
   ────────────────────────────────────────────────────────── */
   const arrow = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>';
 
-  // Work cards
-  document.getElementById("works").innerHTML = projects.map(p => `
+  // Canonical (English) capability names, as referenced by project.skills
+  const capIdByEn = {};
+  Object.entries(I18N.en.caps).forEach(([id, label]) => capIdByEn[label] = id);
+
+  let lang = "en";
+  try{ const saved = localStorage.getItem("lang"); if(languages.some(l=>l.code===saved)) lang = saved; }catch(e){}
+
+  function applyStatic(){
+    const ui = I18N[lang].ui;
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const s = ui[el.getAttribute("data-i18n")];
+      if(s != null) el.innerHTML = s;
+    });
+  }
+
+  function renderWorks(){
+    const tr = I18N[lang];
+    document.getElementById("works").innerHTML = projects.map(p => {
+      const t = tr.projects[p.id];
+      return `
     <div class="work-grid reveal-scale" id="project-${p.id}">
       <div class="work-media col7" data-scroll="skills">
         <div class="halo"></div>
@@ -585,34 +735,45 @@
         </div>
       </div>
       <div class="work-info col5">
-        <div class="work-role">${p.id} — ${p.role}</div>
+        <div class="work-role">${p.id} — ${t.role}</div>
         <h3 class="work-title">${p.title}</h3>
-        <p class="work-desc">${p.desc}</p>
+        <p class="work-desc">${t.desc}</p>
         <div class="work-rows">
-          <div class="work-row"><div class="row-label">Problem</div><div class="row-val">${p.problem}</div></div>
-          <div class="work-row"><div class="row-label">Process</div><div class="row-val">${p.process}</div></div>
-          <div class="work-row"><div class="row-label">Impact</div><div class="row-val accent">${p.impact}</div></div>
+          <div class="work-row"><div class="row-label">${tr.ui["row.problem"]}</div><div class="row-val">${t.problem}</div></div>
+          <div class="work-row"><div class="row-label">${tr.ui["row.process"]}</div><div class="row-val">${t.process}</div></div>
+          <div class="work-row"><div class="row-label">${tr.ui["row.impact"]}</div><div class="row-val accent">${t.impact}</div></div>
         </div>
-        <div class="chips">${p.skills.map(s=>`<button class="chip" data-scroll="skills">${s}</button>`).join("")}</div>
-        <button class="explore" data-scroll="skills">Explore Skills ${arrow}</button>
+        <div class="chips">${p.skills.map(s=>`<button class="chip" data-scroll="skills">${tr.caps[capIdByEn[s]] || s}</button>`).join("")}</div>
+        <button class="explore" data-scroll="skills">${tr.ui["ui.exploreSkills"]} ${arrow}</button>
       </div>
-    </div>`).join("");
+    </div>`;
+    }).join("");
+  }
 
-  // Capabilities
-  document.getElementById("caps").innerHTML = capabilities.map(c => `
+  function renderCaps(){
+    const tr = I18N[lang];
+    document.getElementById("caps").innerHTML = capabilities.map(c => `
     <div class="cap reveal" id="skill-${c.id}">
-      <div class="cap-head"><span class="cap-num">${c.id}</span><h3 class="cap-name">${c.label}</h3></div>
+      <div class="cap-head"><span class="cap-num">${c.id}</span><h3 class="cap-name">${tr.caps[c.id]}</h3></div>
       <div class="cap-items">${c.items.map(i=>`<span class="cap-item">${i}</span>`).join("")}</div>
     </div>`).join("");
+  }
 
-  // Nav dropdowns
-  document.getElementById("dd-work").innerHTML = projects.map(p=>`<button data-scroll="project-${p.id}">${p.title}</button>`).join("");
-  document.getElementById("dd-skills").innerHTML = capabilities.map(c=>`<button data-scroll="skill-${c.id}">${c.label}</button>`).join("");
+  function renderMenus(){
+    const tr = I18N[lang];
+    document.getElementById("dd-work").innerHTML = projects.map(p=>`<button data-scroll="project-${p.id}">${p.title}</button>`).join("");
+    document.getElementById("dd-skills").innerHTML = capabilities.map(c=>`<button data-scroll="skill-${c.id}">${tr.caps[c.id]}</button>`).join("");
+    document.getElementById("m-caps").innerHTML = capabilities.map(c=>`<button class="m-cap" data-scroll="skill-${c.id}" data-mobile>${tr.caps[c.id]}</button>`).join("");
+  }
 
-  // Mobile capabilities
-  document.getElementById("m-caps").innerHTML = capabilities.map(c=>`<button class="m-cap" data-scroll="skill-${c.id}" data-mobile>${c.label}</button>`).join("");
+  function renderFacts(){
+    document.getElementById("facts-grid").innerHTML = I18N[lang].facts.map((text,i)=>`
+    <div class="fact-card reveal">
+      <div class="fact-num">0${i+1}</div>
+      <p class="fact-text">${text}</p>
+    </div>`).join("");
+  }
 
-  // Languages
   function renderLangs(active){
     document.getElementById("lang-short").textContent = languages.find(l=>l.code===active).short;
     document.getElementById("dd-lang").innerHTML = languages.map(l=>
@@ -620,22 +781,33 @@
     document.getElementById("m-langs").innerHTML = languages.map(l=>
       `<button class="m-lang ${l.code===active?'active':''}" data-lang="${l.code}"><span style="font-size:16px">${l.flag}</span><span>${l.label}</span></button>`).join("");
   }
-  let lang = "en";
-  renderLangs(lang);
 
-  // Facts grid
-  document.getElementById("facts-grid").innerHTML = facts.map(f=>`
-    <div class="fact-card reveal">
-      <div class="fact-num">${f.n}</div>
-      <p class="fact-text">${f.text}</p>
-    </div>`).join("");
+  function renderAll(initial){
+    document.documentElement.lang = lang;
+    applyStatic();
+    renderWorks(); renderCaps(); renderMenus(); renderFacts(); renderLangs(lang);
+    if(!initial){
+      // Re-rendered nodes were never observed by the reveal observer —
+      // show them immediately instead of replaying entrance animations.
+      document.querySelectorAll("#works .reveal-scale, #caps .reveal, #facts-grid .reveal")
+        .forEach(el=>el.classList.add("in"));
+    }
+  }
 
-  // Socials
+  function setLang(code){
+    lang = code;
+    try{ localStorage.setItem("lang", code); }catch(e){}
+    renderAll(false);
+  }
+
+  // Socials are language-independent; render once.
   document.getElementById("socials").innerHTML = socials.map(s=>`
     <a class="social" href="${s.href}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${s.label}">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:${s.color};filter:drop-shadow(0 0 6px ${s.color}99)">${s.path}</svg>
       ${s.label}
     </a>`).join("");
+
+  renderAll(true);
 
   /* ──────────────────────────────────────────────────────────
      SMOOTH SCROLL
@@ -681,7 +853,7 @@
       return;
     }
     const l=e.target.closest("[data-lang]");
-    if(l){ lang=l.getAttribute("data-lang"); renderLangs(lang); closeAllDD(); }
+    if(l){ setLang(l.getAttribute("data-lang")); closeAllDD(); }
   });
 
   // dropdowns (hover on desktop, click as fallback)
